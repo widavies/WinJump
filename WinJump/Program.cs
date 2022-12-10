@@ -8,6 +8,9 @@ namespace WinJump {
     internal static class Program {
         [STAThread]
         public static void Main() {
+            // Because windows_key + number is already a bulit in Windows shortcut, we need to kill explorer
+            // (explorer is the process that registers the shortcut) so that it releases the shortcut.
+            // Then, we can register it and restart explorer.
             var killExplorer = Process.Start("cmd.exe", "/c taskkill /f /im explorer.exe");
 
             killExplorer?.WaitForExit();
