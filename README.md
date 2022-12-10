@@ -3,8 +3,7 @@ Ever wanted a way to jump to the `Nth` desktop on Windows 10 or 11 with a keyboa
 - WinJump uses the excellent [VirtualDesktop](https://github.com/MScholtes/VirtualDesktop) library. Most other solutions use an [AutoHotKey](https://www.autohotkey.com/) based solution which automates pressing the Windows built-in `WINDOWS_KEY + CTRL + [LEFT ARROW OR RIGHT ARROW]` shortcut a number of times in a row. 
 This often results in glitchly visuals and lagging while jumping to the desktop you want. VirtualDesktop instead immediately jumps to the desired desktop.
 
-Currently, the following versions of Windows art supported
-
+Currently, the following versions of Windows are supported:
 | Windows Edition      | Version |
 | ----------- | ----------- |
 | Windows 10      | 1607-1709, 1803, 1809 - 21H2       |
