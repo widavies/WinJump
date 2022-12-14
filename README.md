@@ -12,7 +12,7 @@ Currently, the following versions of Windows are supported:
 | Windows 10      | 1607-1709, 1803, 1809 - 21H2       |
 | Windows 11   | 21H2, 22H2       |
 ## How to install
-1) [Download](https://github.com/widavies/WinJump/releases/download/1.0.0/Release_1_0_0.zip)
+1) [Download](https://github.com/widavies/WinJump/releases/download/1.1.0/Release_1_1_0.zip)
 2) Extract and run `setup.exe`
 3) WinJump should start automatically (otherwise, press `WINDOWS_KEY` and search for `"WinJump"` and start it that way)
 4) To make WinJump run at startup:
