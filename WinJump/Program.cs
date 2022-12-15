@@ -11,7 +11,7 @@ namespace WinJump {
         private static extern bool SetForegroundWindow(IntPtr hWnd);
         
         [DllImport("user32.dll")]
-        private static extern IntPtr GetForegroundWindow();
+        private static extern IntPtr GetTopWindow();
         
         [STAThread]
         public static void Main() {
@@ -50,7 +50,6 @@ namespace WinJump {
         
         // Credit https://stackoverflow.com/a/21684059/4779937
         private sealed class STAThread : IDisposable {
-            private readonly IntPtr[] LastActiveWindows = new IntPtr[10];
             private readonly VirtualDesktopWrapper vdw = VirtualDesktopManager.Create();
             
             public STAThread() {
@@ -74,12 +73,12 @@ namespace WinJump {
                 if (ctx == null) throw new ObjectDisposedException("STAThread");
                 
                 ctx.Send((_) => {
-                    LastActiveWindows[vdw.GetDesktop()] = GetForegroundWindow();
                     vdw.JumpTo(index);
                     // Give it just a little time to let the desktop settle
                     Thread.Sleep(10);
-                    if (LastActiveWindows[index] != IntPtr.Zero) {
-                        SetForegroundWindow(LastActiveWindows[index]);    
+                    IntPtr ptr = GetTopWindow();
+                    if (ptr != IntPtr.Zero) {
+                        SetForegroundWindow(ptr);    
                     }
                 }, null);
             }
