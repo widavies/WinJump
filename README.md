@@ -1,5 +1,5 @@
 # Overview
-Ever wanted a way to jump to the `Nth` desktop on Windows 10 or 11 with a keyboard shortcut? WinJump maps `WINDOWS_KEY + <NUMBER>` as a shortcut for the first 10 desktops in Windows.
+Ever wanted a way to jump to the `Nth` desktop on Windows 10 or 11 with a keyboard shortcut? WinJump allows you to create custom shortcuts to jump to a specific desktop or cycle between a group of desktops.
 
 WinJump uses the excellent [VirtualDesktop](https://github.com/MScholtes/VirtualDesktop) library. Most other solutions use an [AutoHotKey](https://www.autohotkey.com/) based solution which automates pressing the Windows built-in `WINDOWS_KEY + CTRL + [LEFT ARROW OR RIGHT ARROW]` shortcut a number of times in a row. 
 This often results in glitchly visuals and lagging while jumping to the desktop you want. VirtualDesktop instead immediately jumps to the desired desktop.
