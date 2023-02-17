@@ -25,29 +25,38 @@ There are two blocks:
 - `toggle-groups` let you group desktops together and cycle through them with a keyboard shortcut
 - `jump-to` lets you define shortcuts that jump directly to a desktop
 
-Both blocks contain a list of items, each item has a `shortcut` keyword. This shortcut keyword must be a combination of:
+Both blocks contain a list of items, each item has a `shortcut` property. This shortcut must be a combination of:
 `win`, `alt`, `shift`, and `ctrl`, it must be terminated by a key listed [here](https://learn.microsoft.com/en-us/dotnet/api/system.windows.forms.keys?view=windowsdesktop-7.0),
 and each token must be separated by `+`.
 
+Each toggle group has the `desktops` property, which should be a list of positive integers, with `1` representing the first desktop.
+
+Each jump to item has the `desktop` property, which should be a single positive integer, with `1` representing the first desktop.
+
+> Warning: If no `.winjump` config file is found or a syntax error exists within it, WinJump will revert to the default key mappings.
+
+WinJump does not auto-reload your configuration file. You must either launch task manager, kill `WinJump`, then launch it again from the start menu or reboot.
 
 ### Example
+Below is an example configuration file that changes the shortcut to `alt+N` to jump to a desktop and adds a toggle group that is triggered by `alt+w` that will cycle between desktops `1`, `5`, and `6`:
+
 ```
 C:\Users\<UserName>\.winjump
 
 {
   "toggle-groups": [
     {
-      "shortcut": "win+w",
-      "desktops": [1, 3, 4]
+      "shortcut": "alt+w",
+      "desktops": [1, 5, 6]
     }
   ],
   "jump-to": [
      {
-       shortcut: "win+d1",
+       shortcut: "alt+d1",
        desktop: 1
      },
      {
-       shortcut: "alt+d2,
+       shortcut: "alt+d2",
        desktop: 2
      },
      {
@@ -85,3 +94,6 @@ C:\Users\<UserName>\.winjump
   ]
 }
 ```
+
+# Known issues
+- Launching WinJump while it is already running will hang Windows explorer. To fix this you have to use `ctrl+shift+esc` to open task manager, kill all WinJump instances, use `Run new task` and type `explorer`, then start WinJump again
