@@ -39,8 +39,7 @@ namespace WinJump {
                     ModifierKeys modifier = (ModifierKeys) ((int) m.LParam & 0xFFFF);
 
                     // invoke the event to notify the parent.
-                    if (KeyPressed != null)
-                        KeyPressed(this, new KeyPressedEventArgs(modifier, key));
+                    KeyPressed?.Invoke(this, new KeyPressedEventArgs(modifier, key));
                 }
             }
 
@@ -75,7 +74,7 @@ namespace WinJump {
             _currentId++;
 
             // register the hot key.
-            if (!RegisterHotKey(_window.Handle, _currentId, (uint) (modifier | ModifierKeys.NoRepeat), (uint) key))
+            if (!RegisterHotKey(_window.Handle, _currentId, (uint)(modifier | ModifierKeys.NoRepeat), (uint) key))
                 throw new InvalidOperationException("Could not register the hot key.");
         }
 
