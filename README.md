@@ -14,10 +14,74 @@ Currently, the following versions of Windows are supported:
 ## How to install
 1) [Download](https://github.com/widavies/WinJump/releases/download/1.3.0/Release_1_3_0.zip)
 2) Extract and run `setup.exe`
-3) WinJump should start automatically (otherwise, press `WINDOWS_KEY` and search for `"WinJump"` and start it that way)
-4) To make WinJump run at startup:
-   1) Press the windows key and search for `"WinJump"`
-   2) Right click > Open file location
-   3) Copy the file named "WinJump"
-   4) Press `WINDOWS_KEY + R` and type `shell:startup`
-   5) Paste the file you copied into this directory.
+3) You're done! WinJump will start automatically and will also register itself to start when your computer boots.
+
+## Config file
+You can optionally include a configuration file named `.winjump` in your home directory to change default behavior.
+
+### Syntax
+There are two blocks:
+
+- `toggle-groups` let you group desktops together and cycle through them with a keyboard shortcut
+- `jump-to` lets you define shortcuts that jump directly to a desktop
+
+Both blocks contain a list of items, each item has a `shortcut` keyword. This shortcut keyword must be a combination of:
+`win`, `alt`, `shift`, and `ctrl`, it must be terminated by a key listed [here](https://learn.microsoft.com/en-us/dotnet/api/system.windows.forms.keys?view=windowsdesktop-7.0),
+and each token must be separated by `+`.
+
+
+### Example
+```
+C:\Users\<UserName>\.winjump
+
+{
+  "toggle-groups": [
+    {
+      "shortcut": "win+w",
+      "desktops": [1, 3, 4]
+    }
+  ],
+  "jump-to": [
+     {
+       shortcut: "win+d1",
+       desktop: 1
+     },
+     {
+       shortcut: "alt+d2,
+       desktop: 2
+     },
+     {
+       shortcut: "alt+d3",
+       desktop: 3
+     },
+     {
+       shortcut: "alt+d4",
+       desktop: 4
+     },
+     {
+       shortcut: "alt+d5",
+       desktop: 5
+     },
+     {
+       shortcut: "alt+d6",
+       desktop: 6
+     },
+     {
+       shortcut: "alt+d7",
+       desktop: 7
+     },
+     {
+       shortcut: "alt+d8",
+       desktop: 8
+     },
+     {
+       shortcut: "alt+d9",
+       desktop: 9
+     },
+     {
+       shortcut: "alt+d0",
+       desktop: 10
+    }
+  ]
+}
+```
