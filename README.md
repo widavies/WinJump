@@ -5,6 +5,16 @@ Most other solutions use an [AutoHotKey](https://www.autohotkey.com/) based solu
 This often results in glitchly visuals and lagging while jumping to the desktop you want.
 WinJump uses the excellent [VirtualDesktop](https://github.com/MScholtes/VirtualDesktop) library which jumps directly to the desired desktop.
 
+# Features
+## Jump To
+Jump directly to a desktop with <kbd>Win</kbd> + [ <kbd>0</kbd> - <kbd>9</kbd> ] *(default)*.
+
+## Toggle Groups
+Cycle through a group of desktops with a single shortcut *(there are no groups by default)*.
+
+## Back and Forth
+Pressing the shortcut for the desktop you are currently on will jump back to the last desktop you were on.
+
 # Installation
 ## Supported versions
 Currently, the following versions of Windows are supported:
