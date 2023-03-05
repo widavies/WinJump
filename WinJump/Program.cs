@@ -103,6 +103,12 @@ namespace WinJump {
             public void JumpTo(int index) {
                 if (ctx == null) throw new ObjectDisposedException("STAThread");
 
+                int currentDesktop = vdw.GetDesktop();
+                if (index == currentDesktop) {
+                    index = lastDesktop;
+                }
+                lastDesktop = currentDesktop;
+
                 ctx.Send((_) => {
                     vdw.JumpTo(index);
                 }, null);
@@ -138,6 +144,7 @@ namespace WinJump {
             }
 
             private SynchronizationContext ctx;
+            private int lastDesktop;
             private readonly ManualResetEvent mre;
         }
     }
