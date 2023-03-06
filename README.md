@@ -121,6 +121,14 @@ Below is an example configuration file that changes the shortcut to `alt+N` to j
 }
 ```
 
+## Uninstallation
+
+WinJump can be uninstalled via the windows application manager
+
+1. Press the start button
+2. Search for "Add or remove programs"
+3. Find WinJump
+4. Uninstall it
 
 ## Known issues
 
