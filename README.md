@@ -133,3 +133,6 @@ WinJump can be uninstalled via the windows application manager
 ## Known issues
 
 - Launching WinJump while it is already running will hang Windows explorer. To fix this you have to use `ctrl+shift+esc` to open task manager, kill all WinJump instances, use `Run new task` and type `explorer`, then start WinJump again
+
+## Attributions
+[Icon created by Freepik](https://www.flaticon.com/free-icons/monitor)
