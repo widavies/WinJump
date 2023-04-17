@@ -1,8 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WinJump", "WinJump\WinJump.csproj", "{22774C1D-A813-493F-AB33-AE3A4049FADC}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VirtualDesktop", "VirtualDesktop\VirtualDesktop.csproj", "{153091D1-8AF0-4609-AA38-DB01F11D0C4A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WinJump", "WinJump\WinJump.csproj", "{5D1F2C40-1F60-4394-93C9-337A738F3BC0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -10,13 +8,9 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{22774C1D-A813-493F-AB33-AE3A4049FADC}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{22774C1D-A813-493F-AB33-AE3A4049FADC}.Release|Any CPU.Build.0 = Release|Any CPU
-		{22774C1D-A813-493F-AB33-AE3A4049FADC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{22774C1D-A813-493F-AB33-AE3A4049FADC}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{153091D1-8AF0-4609-AA38-DB01F11D0C4A}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{153091D1-8AF0-4609-AA38-DB01F11D0C4A}.Release|Any CPU.Build.0 = Release|Any CPU
-		{153091D1-8AF0-4609-AA38-DB01F11D0C4A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{153091D1-8AF0-4609-AA38-DB01F11D0C4A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5D1F2C40-1F60-4394-93C9-337A738F3BC0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5D1F2C40-1F60-4394-93C9-337A738F3BC0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5D1F2C40-1F60-4394-93C9-337A738F3BC0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5D1F2C40-1F60-4394-93C9-337A738F3BC0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

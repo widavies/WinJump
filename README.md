@@ -1,10 +1,11 @@
-# WinJump
-
+﻿# WinJump
+ 
 Ever wanted to jump directly to your `Nth` desktop on Windows 10 or 11 with a keyboard shortcut of your choice? WinJump enables you to create custom shortcuts to jump to any desktop and cycle between groups of desktops.
+WinJump will also tell you what virtual desktop you're on in the system tray:
 
-Most other solutions use an [AutoHotKey](https://www.autohotkey.com/) based solution which automates pressing the Windows default shortuct <kbd>Win</kbd> + <kbd>Ctrl</kbd> + <kbd>Left Arrow</kbd> or <kbd>Right Arrow</kbd> multiple times.
-This often results in glitchly visuals and lagging while jumping to the desktop you want.
-WinJump uses the excellent [VirtualDesktop](https://github.com/MScholtes/VirtualDesktop) library which jumps directly to the desired desktop.
+![image](https://user-images.githubusercontent.com/11671115/232614847-1f8ccd7f-d5b8-429b-a67c-7f94cc5e18d9.png)
+
+
 
 ## Features
 
@@ -21,6 +22,9 @@ Cycle through a group of desktops with a single shortcut *(there are no groups b
 Pressing the shortcut for the desktop you are currently on will jump back to the last desktop you were on.
 
 ## Installation
+1. [Download]
+2. Press Ctrl+R and type `shell:startup`
+3. Drag the `WinJump.exe` to the shell startup folder
 
 ### Supported versions
 
@@ -30,11 +34,9 @@ Currently, the following versions of Windows are supported:
 | Windows 10      | 1607-1709, 1803, 1809 - 21H2       |
 | Windows 11   | 21H2, 22H2       |
 
-### How to install
+> WinJump uses the reverse engineered Windows virtual desktop API. This means that the API often changes between Windows releases. Please see the [reverse engineering guide](https://github.com/github/codeql/blob/main/WinJump/Core/README.md) if you're interested in contributing reverse-engineering definitions for new Windows releases.
 
-1. [Download](https://github.com/widavies/WinJump/releases/download/1.4.0/Release_1_4_0.zip)
-2. Extract and run *setup.exe*
-3. You're done! WinJump will start automatically and will register itself to start when your computer boots.
+### How to install
 
 ### Config file
 
@@ -42,12 +44,13 @@ You can optionally include a configuration file named *.winjump* in your home di
 
 #### Syntax
 
-There are two blocks:
+There are three blocks:
 
 - `toggle-groups` let you group desktops together and cycle through them with a keyboard shortcut
+- `jump-current-goes-to-last` lets you decide whether jumping to the desktop you're already on does A) nothing or B) goes to your previous desktop
 - `jump-to` lets you define shortcuts that jump directly to a desktop
 
-Both blocks contain a list of items, each item has a `shortcut` property. This shortcut must be a combination of:
+The `toggle-groups` and `jump-to` blocks contain a list of items, each item has a `shortcut` property. This shortcut must be a combination of:
 `win`, `alt`, `shift`, and `ctrl`, it must be terminated by a key listed [here](https://learn.microsoft.com/en-us/dotnet/api/system.windows.forms.keys?view=windowsdesktop-7.0),
 and each token must be separated by `+`.
 
@@ -57,11 +60,7 @@ Each `jump-to` item has the `desktop` property, which should be a single positiv
 
 > ⚠️ If no *.winjump* config file is found or a syntax error exists within it, WinJump will use default key mappings.
 
-> ⚠️ WinJump does not auto-reload your configuration file. To apply changes, restart WinJump via one of the following methods:
->
-> - launch task manager, kill WinJump, launch it again from the start menu
-> - log out and back in
-> - reboot
+> ⚠️ WinJump does not auto-reload your configuration file. To apply changes, right click the system-tray icon and select `Reload configuration`.
 
 #### Example
 
@@ -76,6 +75,7 @@ Below is an example configuration file that changes the shortcut to `alt+N` to j
       "desktops": [ 1, 5, 6 ]
     }
   ],
+  "jump-current-goes-to-last": false,
   "jump-to": [
     {
       "shortcut": "alt+d1",
@@ -121,18 +121,6 @@ Below is an example configuration file that changes the shortcut to `alt+N` to j
 }
 ```
 
-## Uninstallation
-
-WinJump can be uninstalled via the windows application manager
-
-1. Press the start button
-2. Search for "Add or remove programs"
-3. Find WinJump
-4. Uninstall it
-
-## Known issues
-
-- Launching WinJump while it is already running will hang Windows explorer. To fix this you have to use `ctrl+shift+esc` to open task manager, kill all WinJump instances, use `Run new task` and type `explorer`, then start WinJump again
-
-## Attributions
-[Icon created by Freepik](https://www.flaticon.com/free-icons/monitor)
+# Uninstall
+1. Press Ctrl+R and type `shell:startup`
+2. Delete `WinJump.exe`
