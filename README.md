@@ -22,7 +22,7 @@ Cycle through a group of desktops with a single shortcut *(there are no groups b
 Pressing the shortcut for the desktop you are currently on will jump back to the last desktop you were on.
 
 ## Installation
-1. [Download]
+1. [Download](https://github.com/widavies/WinJump/releases/download/2.0.0/WinJump.exe)
 2. Press Ctrl+R and type `shell:startup`
 3. Drag the `WinJump.exe` to the shell startup folder
 
