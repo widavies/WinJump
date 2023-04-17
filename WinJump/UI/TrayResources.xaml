@@ -1,0 +1,22 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:tb="http://www.hardcodet.net/taskbar"
+                    xmlns:ui="clr-namespace:WinJump.UI">
+
+    <tb:TaskbarIcon x:Key="NotifyIcon"
+                    MenuActivation="LeftOrRightClick">
+        <tb:TaskbarIcon.ContextMenu>
+            <ContextMenu>
+                <MenuItem Header="{Binding Version}" IsEnabled="False" />
+                <MenuItem Header="Open config file" Command="{Binding OnOpenConfig}" />
+                <MenuItem Header="Reload config file" Command="{Binding .ReloadConfig}"></MenuItem>
+                <MenuItem Header="View documentation" Command="{Binding ViewDocumentation}" />
+                <MenuItem Header="Exit" Command="{Binding Exit }"/>
+            </ContextMenu>
+        </tb:TaskbarIcon.ContextMenu>
+        <tb:TaskbarIcon.DataContext>
+            <ui:TrayModel />
+        </tb:TaskbarIcon.DataContext>
+    </tb:TaskbarIcon>
+
+</ResourceDictionary>

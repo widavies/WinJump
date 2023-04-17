@@ -3,9 +3,9 @@
 /workspace.xml
 # Rider ignored files
 /modules.xml
-/.idea.WinJump.iml
 /contentModel.xml
 /projectSettingsUpdater.xml
+/.idea.WinJump.iml
 # Editor-based HTTP Client requests
 /httpRequests/
 # Datasource local storage ignored files
