@@ -5,8 +5,6 @@ WinJump will also tell you what virtual desktop you're on in the system tray:
 
 ![image](https://user-images.githubusercontent.com/11671115/232614847-1f8ccd7f-d5b8-429b-a67c-7f94cc5e18d9.png)
 
-
-
 ## Features
 
 ### Jump To
@@ -23,6 +21,7 @@ Pressing the shortcut for the desktop you are currently on will jump back to the
 
 ## Installation
 1. [Download](https://github.com/widavies/WinJump/releases/download/2.0.0/WinJump.exe)
+> Note, you may receive a Windows smartscreen warning when you try to run WinJump. I do not feel like spending hundreds of dollars on a certificate, so just just click "More options" and click "Run anyway"
 2. Press Ctrl+R and type `shell:startup`
 3. Drag the `WinJump.exe` to the shell startup folder
 
