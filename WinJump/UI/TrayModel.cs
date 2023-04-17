@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Reflection;
 using System.Windows;
 using System.Windows.Input;
 using WinJump.Core;
@@ -66,7 +67,7 @@ public class TrayModel {
     };
 
     public string Version =>
-        $"WinJump {FileVersionInfo.GetVersionInfo(typeof(TrayModel).Assembly.Location).FileVersion}";
+        $"WinJump {Assembly.GetEntryAssembly()?.GetName().Version?.ToString()}";
 }
 
 public class DelegateCommand : ICommand {
