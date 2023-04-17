@@ -9,7 +9,7 @@ WinJump will also tell you what virtual desktop you're on in the system tray:
 
 ### Jump To
 
-Jump directly to a desktop with <kbd>Win</kbd> + [ <kbd>0</kbd> - <kbd>9</kbd> ] *(default)*.
+Jump directly to a desktop with <kbd>alt</kbd> + [ <kbd>0</kbd> - <kbd>9</kbd> ] *(default)*.
 
 ### Toggle Groups
 
