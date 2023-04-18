@@ -13,8 +13,6 @@ namespace WinJump.Core;
 
 public delegate void DesktopChanged(bool lightMode, uint desktopNum);
 
-// Main controller for WinJump core functionality
-
 /// <summary>
 /// Ties everything together.
 ///
@@ -47,7 +45,6 @@ public class WinJumpManager : IDisposable {
                     _keyboardHook.RegisterHotKey(shortcut.ModifierKeys, shortcut.Keys));
             },
             () => {
-                // Check if the shortcuts are already registered
                 return config.ToggleGroups.Select(t => t.Shortcut).All(shortcut =>
                     _keyboardHook.RegisterHotKey(shortcut.ModifierKeys, shortcut.Keys));
             }
@@ -58,11 +55,14 @@ public class WinJumpManager : IDisposable {
             // and restart it after we've registered the shortcuts
             _explorerMonitor.Kill();
             if(!registerShortcuts.All(x => x.Invoke())) {
-                // Still didn't work, exit out
+                // Still didn't work, exit out (make sure to restart explorer before doing so)
+                _explorerMonitor.EnsureExplorerIsAlive();
+                Application.Current.Shutdown();
                 return;
             }
         }
 
+        // Add handler for hotkey press events
         _keyboardHook.KeyPressed += (_, args) => {
             Shortcut pressed = new Shortcut {
                 ModifierKeys = args.Modifier,
@@ -98,6 +98,7 @@ public class WinJumpManager : IDisposable {
             desktopChanged(_lightMode, desktop);
         });
 
+        // This particular event fires immediately on initial register
         _explorerMonitor.OnColorSchemeChanged += lightMode => {
             _lightMode = lightMode;
             desktopChanged.Invoke(lightMode, (uint) _thread.GetCurrentDesktop());
@@ -109,17 +110,14 @@ public class WinJumpManager : IDisposable {
             } catch(Exception) {
                 // ignored
             }
-            
+
             string? currentExecutablePath = Process.GetCurrentProcess().MainModule?.FileName;
 
             if(currentExecutablePath == null) return;
-            
+
             Process.Start(currentExecutablePath);
             Application.Current.Shutdown();
         };
-
-        // Set the desktop right away
-        desktopChanged.Invoke(_lightMode, (uint) _thread.GetCurrentDesktop());
     }
 
     public void Dispose() {
@@ -139,6 +137,15 @@ internal sealed class STAThread : IDisposable {
     private SynchronizationContext? ctx;
     private readonly ManualResetEvent mre;
     private readonly IVirtualDesktopAPI api = IVirtualDesktopAPI.Create();
+
+    [DllImport("user32.dll")]
+    private static extern bool SetForegroundWindow(IntPtr hWnd);
+
+    [DllImport("user32.dll")]
+    private static extern IntPtr GetTopWindow();
+
+    [DllImport("user32.dll")]
+    private static extern IntPtr GetDesktopWindow();
 
     public STAThread(Action<uint> DesktopChanged) {
         using(mre = new ManualResetEvent(false)) {
@@ -178,11 +185,27 @@ internal sealed class STAThread : IDisposable {
             }
 
             api.JumpToDesktop((int) index);
+            
+            // Hackish way to fix kind of annoying problem where
+            // focus doesn't always come along with a desktop change
+            IntPtr t = GetTopWindow();
+            if(t != IntPtr.Zero) {
+                SetForegroundWindow(t);
+            }
         });
     }
 
     public void JumpTo(uint index) {
-        WrapCall(() => api.JumpToDesktop((int) index));
+        WrapCall(() => {
+            api.JumpToDesktop((int) index);
+            
+            // Hackish way to fix kind of annoying problem where
+            // focus doesn't always come along with a desktop change
+            IntPtr t = GetTopWindow();
+            if(t != IntPtr.Zero) {
+                SetForegroundWindow(t);
+            }
+        });
     }
 
     // desktops must be 0-indexed
@@ -195,6 +218,13 @@ internal sealed class STAThread : IDisposable {
             int next = desktops[(index + 1) % desktops.Length];
 
             api.JumpToDesktop(next);
+            
+            // Hackish way to fix kind of annoying problem where
+            // focus doesn't always come along with a desktop change
+            IntPtr t = GetTopWindow();
+            if(t != IntPtr.Zero) {
+                SetForegroundWindow(t);
+            }
         });
     }
 

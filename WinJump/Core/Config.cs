@@ -7,6 +7,9 @@ using Newtonsoft.Json;
 
 namespace WinJump.Core;
 
+/// <summary>
+/// Handles loading the configuration file
+/// </summary>
 internal sealed class Config {
     public static readonly string LOCATION = Path.Combine(
         Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),

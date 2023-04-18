@@ -3,6 +3,11 @@ using Microsoft.Win32;
 
 namespace WinJump.Core.VirtualDesktopDefinitions;
 
+/// <summary>
+/// This interface represents the essential functions that must be provided by a virtual desktop API for WinJump
+/// to function. When reverse engineering the Windows virtual desktop API, you must provide definitions
+/// for these functions.
+/// </summary>
 public interface IVirtualDesktopAPI : IDisposable {
     
     /// <summary>
@@ -22,6 +27,11 @@ public interface IVirtualDesktopAPI : IDisposable {
     /// <param name="index">0-indexed desktop number. If it is invalid it will be ignored.</param>
     void JumpToDesktop(int index);
 
+    /// <summary>
+    /// Creates the appropriate virtual desktop API definition for the current Windows version.
+    /// </summary>
+    /// <returns>A virtual desktop API for the installed Windows version</returns>
+    /// <exception cref="Exception">If the particular Windows version is unsupported</exception>
     public static IVirtualDesktopAPI Create() {
         string? releaseId = Registry.GetValue(@"HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion",
             "CurrentBuildNumber", "")?.ToString();
