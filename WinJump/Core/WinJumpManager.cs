@@ -13,8 +13,6 @@ namespace WinJump.Core;
 
 public delegate void DesktopChanged(bool lightMode, uint desktopNum);
 
-// Main controller for WinJump core functionality
-
 /// <summary>
 /// Ties everything together.
 ///
@@ -47,7 +45,6 @@ public class WinJumpManager : IDisposable {
                     _keyboardHook.RegisterHotKey(shortcut.ModifierKeys, shortcut.Keys));
             },
             () => {
-                // Check if the shortcuts are already registered
                 return config.ToggleGroups.Select(t => t.Shortcut).All(shortcut =>
                     _keyboardHook.RegisterHotKey(shortcut.ModifierKeys, shortcut.Keys));
             }
@@ -58,11 +55,14 @@ public class WinJumpManager : IDisposable {
             // and restart it after we've registered the shortcuts
             _explorerMonitor.Kill();
             if(!registerShortcuts.All(x => x.Invoke())) {
-                // Still didn't work, exit out
+                // Still didn't work, exit out (make sure to restart explorer before doing so)
+                _explorerMonitor.EnsureExplorerIsAlive();
+                Application.Current.Shutdown();
                 return;
             }
         }
 
+        // Add handler for hotkey press events
         _keyboardHook.KeyPressed += (_, args) => {
             Shortcut pressed = new Shortcut {
                 ModifierKeys = args.Modifier,
@@ -98,6 +98,7 @@ public class WinJumpManager : IDisposable {
             desktopChanged(_lightMode, desktop);
         });
 
+        // This particular event fires immediately on initial register
         _explorerMonitor.OnColorSchemeChanged += lightMode => {
             _lightMode = lightMode;
             desktopChanged.Invoke(lightMode, (uint) _thread.GetCurrentDesktop());
@@ -117,9 +118,6 @@ public class WinJumpManager : IDisposable {
             Process.Start(currentExecutablePath);
             Application.Current.Shutdown();
         };
-
-        // Set the desktop right away
-        desktopChanged.Invoke(_lightMode, (uint) _thread.GetCurrentDesktop());
     }
 
     public void Dispose() {
