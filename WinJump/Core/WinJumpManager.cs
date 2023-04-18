@@ -110,11 +110,11 @@ public class WinJumpManager : IDisposable {
             } catch(Exception) {
                 // ignored
             }
-            
+
             string? currentExecutablePath = Process.GetCurrentProcess().MainModule?.FileName;
 
             if(currentExecutablePath == null) return;
-            
+
             Process.Start(currentExecutablePath);
             Application.Current.Shutdown();
         };
@@ -137,6 +137,15 @@ internal sealed class STAThread : IDisposable {
     private SynchronizationContext? ctx;
     private readonly ManualResetEvent mre;
     private readonly IVirtualDesktopAPI api = IVirtualDesktopAPI.Create();
+
+    [DllImport("user32.dll")]
+    private static extern bool SetForegroundWindow(IntPtr hWnd);
+
+    [DllImport("user32.dll")]
+    private static extern IntPtr GetTopWindow();
+
+    [DllImport("user32.dll")]
+    private static extern IntPtr GetDesktopWindow();
 
     public STAThread(Action<uint> DesktopChanged) {
         using(mre = new ManualResetEvent(false)) {
@@ -176,11 +185,27 @@ internal sealed class STAThread : IDisposable {
             }
 
             api.JumpToDesktop((int) index);
+            
+            // Hackish way to fix kind of annoying problem where
+            // focus doesn't always come along with a desktop change
+            IntPtr t = GetTopWindow();
+            if(t != IntPtr.Zero) {
+                SetForegroundWindow(t);
+            }
         });
     }
 
     public void JumpTo(uint index) {
-        WrapCall(() => api.JumpToDesktop((int) index));
+        WrapCall(() => {
+            api.JumpToDesktop((int) index);
+            
+            // Hackish way to fix kind of annoying problem where
+            // focus doesn't always come along with a desktop change
+            IntPtr t = GetTopWindow();
+            if(t != IntPtr.Zero) {
+                SetForegroundWindow(t);
+            }
+        });
     }
 
     // desktops must be 0-indexed
@@ -193,6 +218,13 @@ internal sealed class STAThread : IDisposable {
             int next = desktops[(index + 1) % desktops.Length];
 
             api.JumpToDesktop(next);
+            
+            // Hackish way to fix kind of annoying problem where
+            // focus doesn't always come along with a desktop change
+            IntPtr t = GetTopWindow();
+            if(t != IntPtr.Zero) {
+                SetForegroundWindow(t);
+            }
         });
     }
 
