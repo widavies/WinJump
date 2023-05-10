@@ -140,12 +140,15 @@ internal sealed class STAThread : IDisposable {
 
     [DllImport("user32.dll")]
     private static extern bool SetForegroundWindow(IntPtr hWnd);
+    
+    [DllImport("user32.dll")]
+    private static extern IntPtr GetForegroundWindow();
 
     [DllImport("user32.dll")]
-    private static extern IntPtr GetTopWindow();
+    private static extern IntPtr GetTopWindow(IntPtr hWnd);
 
     [DllImport("user32.dll")]
-    private static extern IntPtr GetDesktopWindow();
+    private static extern bool IsWindowVisible(IntPtr hWnd);
 
     public STAThread(Action<uint> DesktopChanged) {
         using(mre = new ManualResetEvent(false)) {
@@ -188,8 +191,9 @@ internal sealed class STAThread : IDisposable {
             
             // Hackish way to fix kind of annoying problem where
             // focus doesn't always come along with a desktop change
-            IntPtr t = GetTopWindow();
-            if(t != IntPtr.Zero) {
+            IntPtr t = GetForegroundWindow();
+            
+            if(t != IntPtr.Zero && IsWindowVisible(t)) {
                 SetForegroundWindow(t);
             }
         });
@@ -201,8 +205,9 @@ internal sealed class STAThread : IDisposable {
             
             // Hackish way to fix kind of annoying problem where
             // focus doesn't always come along with a desktop change
-            IntPtr t = GetTopWindow();
-            if(t != IntPtr.Zero) {
+            IntPtr t = GetForegroundWindow();
+            
+            if(t != IntPtr.Zero && IsWindowVisible(t)) {
                 SetForegroundWindow(t);
             }
         });
@@ -221,8 +226,9 @@ internal sealed class STAThread : IDisposable {
             
             // Hackish way to fix kind of annoying problem where
             // focus doesn't always come along with a desktop change
-            IntPtr t = GetTopWindow();
-            if(t != IntPtr.Zero) {
+            IntPtr t = GetForegroundWindow();
+            
+            if(t != IntPtr.Zero && IsWindowVisible(t)) {
                 SetForegroundWindow(t);
             }
         });

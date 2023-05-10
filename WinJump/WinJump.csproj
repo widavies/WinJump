@@ -5,9 +5,9 @@
         <TargetFramework>net7.0-windows</TargetFramework>
         <Nullable>enable</Nullable>
         <UseWPF>true</UseWPF>
-        <Version>2.0.1</Version>
-        <AssemblyVersion>2.0.1</AssemblyVersion>
-        <FileVersion>2.0.1</FileVersion>
+        <Version>2.0.3</Version>
+        <AssemblyVersion>2.0.3</AssemblyVersion>
+        <FileVersion>2.0.3</FileVersion>
     </PropertyGroup>
 
     <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
@@ -20,7 +20,7 @@
 
     <ItemGroup>
       <PackageReference Include="Hardcodet.NotifyIcon.Wpf" Version="1.1.0" />
-      <PackageReference Include="Microsoft.Extensions.FileProviders.Embedded" Version="7.0.4" />
+      <PackageReference Include="Microsoft.Extensions.FileProviders.Embedded" Version="7.0.5" />
       <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     </ItemGroup>
 
