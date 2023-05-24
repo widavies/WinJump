@@ -140,15 +140,24 @@ internal sealed class STAThread : IDisposable {
 
     [DllImport("user32.dll")]
     private static extern bool SetForegroundWindow(IntPtr hWnd);
-    
+
     [DllImport("user32.dll")]
     private static extern IntPtr GetForegroundWindow();
 
-    [DllImport("user32.dll")]
-    private static extern IntPtr GetTopWindow(IntPtr hWnd);
+    [DllImport("user32.dll", SetLastError = true)]
+    private static extern IntPtr FindWindow(string? lpClassName, string lpWindowName);
 
     [DllImport("user32.dll")]
-    private static extern bool IsWindowVisible(IntPtr hWnd);
+    private static extern uint GetWindowThreadProcessId(IntPtr hWnd, out uint lpdwProcessId);
+
+    [DllImport("kernel32.dll")]
+    private static extern uint GetCurrentThreadId();
+
+    [DllImport("user32.dll")]
+    private static extern bool AttachThreadInput(uint idAttach, uint idAttachTo, bool fAttach);
+
+    [DllImport("user32.dll")]
+    private static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
 
     public STAThread(Action<uint> DesktopChanged) {
         using(mre = new ManualResetEvent(false)) {
@@ -188,29 +197,13 @@ internal sealed class STAThread : IDisposable {
             }
 
             api.JumpToDesktop((int) index);
-            
-            // Hackish way to fix kind of annoying problem where
-            // focus doesn't always come along with a desktop change
-            IntPtr t = GetForegroundWindow();
-            
-            if(t != IntPtr.Zero && IsWindowVisible(t)) {
-                SetForegroundWindow(t);
-            }
-        });
+        }, true);
     }
 
     public void JumpTo(uint index) {
         WrapCall(() => {
             api.JumpToDesktop((int) index);
-            
-            // Hackish way to fix kind of annoying problem where
-            // focus doesn't always come along with a desktop change
-            IntPtr t = GetForegroundWindow();
-            
-            if(t != IntPtr.Zero && IsWindowVisible(t)) {
-                SetForegroundWindow(t);
-            }
-        });
+        }, true);
     }
 
     // desktops must be 0-indexed
@@ -223,15 +216,7 @@ internal sealed class STAThread : IDisposable {
             int next = desktops[(index + 1) % desktops.Length];
 
             api.JumpToDesktop(next);
-            
-            // Hackish way to fix kind of annoying problem where
-            // focus doesn't always come along with a desktop change
-            IntPtr t = GetForegroundWindow();
-            
-            if(t != IntPtr.Zero && IsWindowVisible(t)) {
-                SetForegroundWindow(t);
-            }
-        });
+        }, true);
     }
 
     private void Initialize(object? sender, EventArgs e) {
@@ -240,14 +225,38 @@ internal sealed class STAThread : IDisposable {
         System.Windows.Forms.Application.Idle -= Initialize;
     }
 
-    private bool WrapCall(Action action) {
+    private bool WrapCall(Action action, bool performWindowFocusHack = false) {
         if(ctx == null) throw new ObjectDisposedException("STAThread");
 
         var result = new BlockingCollection<bool>();
 
         ctx.Send(_ => {
             try {
+                if(performWindowFocusHack) {
+                    // Hackish way to fix kind of annoying problem where
+                    // focus doesn't always come along with a desktop change.
+                    // Read more here: https://github.com/MScholtes/VirtualDesktop/issues/57
+                    IntPtr hwnd = FindWindow(null, "Program Manager");
+                    GetWindowThreadProcessId(hwnd, out uint desktopThreadId);
+                    GetWindowThreadProcessId(GetForegroundWindow(), out uint foregroundThreadID);
+                    uint currentThreadID = GetCurrentThreadId();
+
+                    if(desktopThreadId != 0 && foregroundThreadID != 0 && foregroundThreadID != currentThreadID) {
+                        AttachThreadInput(desktopThreadId, currentThreadID, true);
+                        AttachThreadInput(foregroundThreadID, currentThreadID, true);
+                        SetForegroundWindow(hwnd);
+                        AttachThreadInput(foregroundThreadID, currentThreadID, false);
+                        AttachThreadInput(desktopThreadId, currentThreadID, false);
+                    }
+                }
+
                 action.Invoke();
+
+                if(performWindowFocusHack) {
+                    IntPtr wnd = FindWindow(null, "Program Manager");
+                    ShowWindow(wnd, 6);
+                }
+                
                 result.Add(true);
             } catch(COMException) {
                 // Specifically ignored. If explorer.exe dies these calls will start failing.
