@@ -251,9 +251,11 @@ internal sealed class STAThread : IDisposable {
                 }
 
                 action.Invoke();
-                
-                IntPtr wnd = FindWindow(null, "Program Manager");
-                ShowWindow(wnd, 6);
+
+                if(performWindowFocusHack) {
+                    IntPtr wnd = FindWindow(null, "Program Manager");
+                    ShowWindow(wnd, 6);
+                }
                 
                 result.Add(true);
             } catch(COMException) {
