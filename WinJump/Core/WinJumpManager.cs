@@ -28,6 +28,7 @@ public class WinJumpManager : IDisposable {
 
     private readonly STAThread? _thread; // tied exactly to the lifecycle of explorer.exe
     private readonly ExplorerMonitor _explorerMonitor = new();
+    private readonly MouseHook _mouseHook = new();
     private readonly KeyboardHook _keyboardHook = new();
     private bool _lightMode { get; set; }
     private uint _currentDesktop { get; set; }

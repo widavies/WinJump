@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 
@@ -19,11 +20,16 @@ public sealed class KeyboardHook : IDisposable {
     /// </summary>
     private sealed class Window : NativeWindow, IDisposable {
         private const int WM_HOTKEY = 0x0312;
+        private const int WM_MOUSEWHEEL = 0x020A;
         public event EventHandler<KeyPressedEventArgs>? KeyPressed;
         
         public Window() {
             // create the handle for the window.
             CreateHandle(new CreateParams());
+            
+            // register mouse wheel
+            
+            
         }
 
         /// <summary>
@@ -41,6 +47,8 @@ public sealed class KeyboardHook : IDisposable {
 
                 // invoke the event to notify the parent.
                 KeyPressed?.Invoke(this, new KeyPressedEventArgs(modifier, key));
+            } else if(m.Msg == WM_MOUSEWHEEL) {
+                Debug.WriteLine("Scrolled");
             }
         }
 
