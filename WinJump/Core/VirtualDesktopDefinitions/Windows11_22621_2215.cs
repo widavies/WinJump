@@ -95,26 +95,21 @@ namespace WinJump.Core.VirtualDesktopDefinitions {
         internal class VirtualDesktopNotification : IVirtualDesktopNotification {
             public required Action<int> OnDesktopChanged;
 
-            public void VirtualDesktopCreated(IObjectArray array, IVirtualDesktop pDesktop) {
+            public void VirtualDesktopCreated(IVirtualDesktop pDesktop) {
             }
 
-            public void VirtualDesktopDestroyBegin(IObjectArray array, IVirtualDesktop pDesktopDestroyed,
+            public void VirtualDesktopDestroyBegin(IVirtualDesktop pDesktopDestroyed,
                 IVirtualDesktop pDesktopFallback) {
             }
 
-            public void VirtualDesktopDestroyFailed(IObjectArray array, IVirtualDesktop pDesktopDestroyed,
+            public void VirtualDesktopDestroyFailed(IVirtualDesktop pDesktopDestroyed,
                 IVirtualDesktop pDesktopFallback) {
             }
 
-            public void VirtualDesktopDestroyed(IObjectArray array, IVirtualDesktop pDesktopDestroyed,
-                IVirtualDesktop pDesktopFallback) {
+            public void VirtualDesktopDestroyed(IVirtualDesktop pDesktopDestroyed, IVirtualDesktop pDesktopFallback) {
             }
 
-            public void VirtualDesktopIsPerMonitorChanged(int value) {
-            }
-
-            public void VirtualDesktopMoved(IObjectArray array, IVirtualDesktop pDesktop, int nIndexFrom,
-                int nIndexTo) {
+            public void VirtualDesktopMoved(IVirtualDesktop pDesktop, int nIndexFrom, int nIndexTo) {
             }
 
             public void VirtualDesktopNameChanged(IVirtualDesktop pDesktop, string path) {
@@ -123,12 +118,17 @@ namespace WinJump.Core.VirtualDesktopDefinitions {
             public void ViewVirtualDesktopChanged(IApplicationView pView) {
             }
 
-            public void CurrentVirtualDesktopChanged(IObjectArray array, IVirtualDesktop pDesktopOld,
-                IVirtualDesktop pDesktopNew) {
+            public void CurrentVirtualDesktopChanged(IVirtualDesktop pDesktopOld, IVirtualDesktop pDesktopNew) {
                 OnDesktopChanged.Invoke(DesktopManager.GetIndex(pDesktopNew));
             }
 
-            public void VirtualDesktopWallpaperChanged(IObjectArray array, IVirtualDesktop pDesktop, string path) {
+            public void VirtualDesktopWallpaperChanged(IVirtualDesktop pDesktop, string path) {
+            }
+
+            public void VirtualDesktopSwitched(IVirtualDesktop pDesktop) {
+            }
+
+            public void RemoteVirtualDesktopConnected(IVirtualDesktop pDesktop) {
             }
         }
 
@@ -294,34 +294,34 @@ namespace WinJump.Core.VirtualDesktopDefinitions {
         }
 
         [ComImport]
-        [Guid("CD403E52-DEED-4C13-B437-B98380F2B1E8")]
+        [Guid("B287FA1C-7771-471A-A2DF-9B6B21F0D675")]
         [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
         internal interface IVirtualDesktopNotification {
-            void VirtualDesktopCreated(IObjectArray array, IVirtualDesktop pDesktop);
+            void VirtualDesktopCreated(IVirtualDesktop pDesktop);
 
-            void VirtualDesktopDestroyBegin(IObjectArray array, IVirtualDesktop pDesktopDestroyed,
+            void VirtualDesktopDestroyBegin(IVirtualDesktop pDesktopDestroyed,
                 IVirtualDesktop pDesktopFallback);
 
-            void VirtualDesktopDestroyFailed(IObjectArray array, IVirtualDesktop pDesktopDestroyed,
-                IVirtualDesktop pDesktopFallback);
+            void VirtualDesktopDestroyFailed(IVirtualDesktop pDesktopDestroyed, IVirtualDesktop pDesktopFallback);
 
-            void VirtualDesktopDestroyed(IObjectArray array, IVirtualDesktop pDesktopDestroyed,
-                IVirtualDesktop pDesktopFallback);
+            void VirtualDesktopDestroyed(IVirtualDesktop pDesktopDestroyed, IVirtualDesktop pDesktopFallback);
 
-            void VirtualDesktopIsPerMonitorChanged(int value);
-
-            void VirtualDesktopMoved(IObjectArray array, IVirtualDesktop pDesktop, int nIndexFrom, int nIndexTo);
+            void VirtualDesktopMoved(IVirtualDesktop pDesktop, int nIndexFrom, int nIndexTo);
 
             void VirtualDesktopNameChanged(IVirtualDesktop pDesktop, [MarshalAs(UnmanagedType.HString)] string path);
 
             void ViewVirtualDesktopChanged(IApplicationView pView);
 
-            void CurrentVirtualDesktopChanged(IObjectArray array, IVirtualDesktop pDesktopOld,
+            void CurrentVirtualDesktopChanged(IVirtualDesktop pDesktopOld,
                 IVirtualDesktop pDesktopNew);
 
-            void VirtualDesktopWallpaperChanged(IObjectArray array, IVirtualDesktop pDesktop,
+            void VirtualDesktopWallpaperChanged(IVirtualDesktop pDesktop,
                 [MarshalAs(UnmanagedType.HString)]
                 string path);
+
+            void VirtualDesktopSwitched(IVirtualDesktop pDesktop);
+
+            void RemoteVirtualDesktopConnected(IVirtualDesktop pDesktop);
         }
 
         [ComImport]
