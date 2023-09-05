@@ -1,25 +1,15 @@
-﻿# WinJump
+![image](https://github.com/widavies/WinJump/assets/11671115/6e370296-cd73-4def-a256-de0b6df3bfb8)
 
-Configure a custom keyboard shortcut to jump between virtual desktops in Windows.
+Configure a custom keyboard shortcut to jump between virtual desktops in Windows. 
 
-WinJump enables you to create custom shortcuts to jump to any desktop and cycle between groups of desktops.
-WinJump will also tell you what virtual desktop you're on in the system tray:
+Features:
+- Configure a custom keyboard shortcut (like `alt + N` or `win + N`) to jump directly to a virtual desktop
+- See what virtual desktop you're currently on in the system tray:
 
 ![image](https://user-images.githubusercontent.com/11671115/232614847-1f8ccd7f-d5b8-429b-a67c-7f94cc5e18d9.png)
 
-## Features
-
-### Jump To
-
-Jump directly to a desktop with <kbd>alt</kbd> + [ <kbd>0</kbd> - <kbd>9</kbd> ] *(default)*.
-
-### Toggle Groups
-
-Cycle through a group of desktops with a single shortcut *(there are no groups by default)*.
-
-### Back and Forth
-
-Pressing the shortcut for the desktop you are currently on will jump back to the last desktop you were on.
+- Group virtual desktops together and cycle through them with a custom shortcut key
+- Configure a shortcut to jump back and forth between two virtual desktops
 
 ## Installation
 1. [Download](https://github.com/widavies/WinJump/releases/download/2.0.3/WinJump.exe)
@@ -27,19 +17,11 @@ Pressing the shortcut for the desktop you are currently on will jump back to the
 2. Press Ctrl+R and type `shell:startup`
 3. Drag the `WinJump.exe` to the shell startup folder
 
-### Supported versions
-
-Currently, the following versions of Windows are supported:
-| Windows Edition      | Version |
-| ----------- | ----------- |
-| Windows 10      | 1607-1709, 1803, 1809 - 21H2       |
-| Windows 11   | 21H2, 22H2       |
-
-> WinJump uses the reverse engineered Windows virtual desktop API. This means that the API often changes between Windows releases. Please see the [reverse engineering guide](https://github.com/widavies/WinJump/blob/main/WinJump/Core/VirtualDesktopDefinitions/README.md) if you're interested in contributing reverse-engineering definitions for new Windows releases.
-
 ### Config file
 
-You can optionally include a configuration file named *.winjump* in your home directory to change the default behavior.
+To configure WinJump, right click the system tray icon and select "open config file":
+
+![image](https://github.com/widavies/WinJump/assets/11671115/ee7c6b1d-0b33-4c45-a965-99c523564125)
 
 #### Syntax
 
@@ -65,7 +47,7 @@ Each `jump-to` item has the `desktop` property, which should be a single positiv
 
 Below is an example configuration file that changes the shortcut to `alt+N` to jump to a desktop and adds a toggle group that is triggered by `alt+w` that will cycle between desktops `1`, `5`, and `6`:
 
-```jsonc
+```json
 // C:\Users\<UserName>\.winjump
 {
   "toggle-groups": [
@@ -119,6 +101,9 @@ Below is an example configuration file that changes the shortcut to `alt+N` to j
   ]
 }
 ```
+
+# Advanced
+> WinJump uses the reverse engineered Windows virtual desktop API. This means that the API often changes between Windows releases. Please see the [reverse engineering guide](https://github.com/widavies/WinJump/blob/main/WinJump/Core/VirtualDesktopDefinitions/README.md) if you're interested in contributing reverse-engineering definitions for new Windows releases.
 
 # Uninstall
 1. Press Ctrl+R and type `shell:startup`
