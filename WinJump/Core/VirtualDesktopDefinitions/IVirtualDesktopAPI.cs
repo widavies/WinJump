@@ -36,13 +36,22 @@ public interface IVirtualDesktopAPI : IDisposable {
         string? releaseId = Registry.GetValue(@"HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion",
             "CurrentBuildNumber", "")?.ToString();
 
-        if(!int.TryParse(releaseId, out int buildNumber)) {
-            throw new Exception("Unrecognized Windows version");
+        string? releaseBuild = Registry.GetValue(@"HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion",
+            "UBR", "")?.ToString();
+        
+        if(!int.TryParse(releaseId, out int releaseIdNumber)) {
+            throw new Exception("Unrecognized Windows release id version");
         }
 
-        return buildNumber switch {
+        if(!int.TryParse(releaseBuild, out int releaseBuildNumber)) {
+            throw new Exception("Unrecognized Windows build version");
+        }
+
+        return releaseIdNumber switch {
             // Work out the proper desktop wrapper
-            >= 22621 => new Windows11_22621.VirtualDesktopApi(),
+            >= 22621 => releaseBuildNumber >= 2215
+                ? new Windows11_22621_2215.VirtualDesktopApi()
+                : new Windows11_22621.VirtualDesktopApi(),
             >= 22000 => new Windows11_22000.VirtualDesktopApi(),
             >= 17763 => new Windows10_17763.VirtualDesktopApi(),
             _ => throw new Exception("Unsupported Windows version")

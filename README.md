@@ -33,7 +33,7 @@ Currently, the following versions of Windows are supported:
 | Windows 10      | 1607-1709, 1803, 1809 - 21H2       |
 | Windows 11   | 21H2, 22H2       |
 
-> WinJump uses the reverse engineered Windows virtual desktop API. This means that the API often changes between Windows releases. Please see the [reverse engineering guide](https://github.com/github/codeql/blob/main/WinJump/Core/README.md) if you're interested in contributing reverse-engineering definitions for new Windows releases.
+> WinJump uses the reverse engineered Windows virtual desktop API. This means that the API often changes between Windows releases. Please see the [reverse engineering guide](https://github.com/widavies/WinJump/blob/main/WinJump/Core/VirtualDesktopDefinitions/README.md) if you're interested in contributing reverse-engineering definitions for new Windows releases.
 
 ### How to install
 
