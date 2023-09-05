@@ -1,6 +1,8 @@
 ﻿# WinJump
- 
-Ever wanted to jump directly to your `Nth` desktop on Windows 10 or 11 with a keyboard shortcut of your choice? WinJump enables you to create custom shortcuts to jump to any desktop and cycle between groups of desktops.
+
+Configure a custom keyboard shortcut to jump between virtual desktops in Windows.
+
+WinJump enables you to create custom shortcuts to jump to any desktop and cycle between groups of desktops.
 WinJump will also tell you what virtual desktop you're on in the system tray:
 
 ![image](https://user-images.githubusercontent.com/11671115/232614847-1f8ccd7f-d5b8-429b-a67c-7f94cc5e18d9.png)
@@ -34,8 +36,6 @@ Currently, the following versions of Windows are supported:
 | Windows 11   | 21H2, 22H2       |
 
 > WinJump uses the reverse engineered Windows virtual desktop API. This means that the API often changes between Windows releases. Please see the [reverse engineering guide](https://github.com/widavies/WinJump/blob/main/WinJump/Core/VirtualDesktopDefinitions/README.md) if you're interested in contributing reverse-engineering definitions for new Windows releases.
-
-### How to install
 
 ### Config file
 
