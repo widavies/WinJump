@@ -54,7 +54,7 @@ public interface IVirtualDesktopAPI : IDisposable {
                 : new Windows11_22621.VirtualDesktopApi(),
             >= 22000 => new Windows11_22000.VirtualDesktopApi(),
             >= 17763 => new Windows10_17763.VirtualDesktopApi(),
-            _ => throw new Exception("Unsupported Windows version")
+            _ => throw new Exception($"Unsupported Windows version {releaseId}.{releaseBuildNumber}")
         };
     }
 }
