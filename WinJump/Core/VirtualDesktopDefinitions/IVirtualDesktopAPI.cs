@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text.RegularExpressions;
 using Microsoft.Win32;
 
 namespace WinJump.Core.VirtualDesktopDefinitions;
@@ -9,7 +10,6 @@ namespace WinJump.Core.VirtualDesktopDefinitions;
 /// for these functions.
 /// </summary>
 public interface IVirtualDesktopAPI : IDisposable {
-    
     /// <summary>
     /// An event that notifies subscribers when the virtual desktop changes.
     /// </summary>
@@ -33,19 +33,24 @@ public interface IVirtualDesktopAPI : IDisposable {
     /// <returns>A virtual desktop API for the installed Windows version</returns>
     /// <exception cref="Exception">If the particular Windows version is unsupported</exception>
     public static IVirtualDesktopAPI Create() {
-        string? releaseId = Registry.GetValue(@"HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion",
-            "CurrentBuildNumber", "")?.ToString();
-
-        if(!int.TryParse(releaseId, out int buildNumber)) {
-            throw new Exception("Unrecognized Windows version");
+        OperatingSystem osInfo = Environment.OSVersion;
+        
+        string? releaseBuild = Registry.LocalMachine.OpenSubKey("SOFTWARE")?.OpenSubKey("Microsoft")?
+            .OpenSubKey("Windows NT")?.OpenSubKey("CurrentVersion")?.GetValue("UBR")?.ToString();
+        
+        if(!int.TryParse(releaseBuild, out int releaseBuildNumber)) {
+            throw new Exception($"Unrecognized Windows build version {osInfo.Version.Build}.{releaseBuild}");
         }
 
-        return buildNumber switch {
+        return osInfo.Version.Build switch {
             // Work out the proper desktop wrapper
-            >= 22621 => new Windows11_22621.VirtualDesktopApi(),
+            >= 22621 => releaseBuildNumber >= 2215
+                ? new Windows11_22621_2215.VirtualDesktopApi()
+                : new Windows11_22621.VirtualDesktopApi(),
             >= 22000 => new Windows11_22000.VirtualDesktopApi(),
             >= 17763 => new Windows10_17763.VirtualDesktopApi(),
-            _ => throw new Exception("Unsupported Windows version")
+            // Just try the most recent as a last ditch effort
+            _ => new Windows11_22621_2215.VirtualDesktopApi()
         };
     }
 }
