@@ -9,7 +9,6 @@ namespace WinJump.Core.VirtualDesktopDefinitions;
 /// for these functions.
 /// </summary>
 public interface IVirtualDesktopAPI : IDisposable {
-    
     /// <summary>
     /// An event that notifies subscribers when the virtual desktop changes.
     /// </summary>
@@ -33,18 +32,18 @@ public interface IVirtualDesktopAPI : IDisposable {
     /// <returns>A virtual desktop API for the installed Windows version</returns>
     /// <exception cref="Exception">If the particular Windows version is unsupported</exception>
     public static IVirtualDesktopAPI Create() {
-        string? releaseId = Registry.GetValue(@"HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion",
-            "CurrentBuildNumber", "")?.ToString();
+        string? releaseId = Registry.LocalMachine.OpenSubKey("SOFTWARE")?.OpenSubKey("Microsoft")?
+            .OpenSubKey("Windows NT")?.OpenSubKey("CurrentVersion")?.GetValue("CurrentBuildNumber")?.ToString();
 
-        string? releaseBuild = Registry.GetValue(@"HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion",
-            "UBR", "")?.ToString();
+        string? releaseBuild = Registry.LocalMachine.OpenSubKey("SOFTWARE")?.OpenSubKey("Microsoft")?
+            .OpenSubKey("Windows NT")?.OpenSubKey("CurrentVersion")?.GetValue("UBR")?.ToString();
         
         if(!int.TryParse(releaseId, out int releaseIdNumber)) {
-            throw new Exception("Unrecognized Windows release id version");
+            throw new Exception($"Unrecognized Windows release id version {releaseId}.{releaseBuild}");
         }
 
         if(!int.TryParse(releaseBuild, out int releaseBuildNumber)) {
-            throw new Exception("Unrecognized Windows build version");
+            throw new Exception($"Unrecognized Windows build version {releaseId}.{releaseBuild}");
         }
 
         return releaseIdNumber switch {
@@ -54,7 +53,7 @@ public interface IVirtualDesktopAPI : IDisposable {
                 : new Windows11_22621.VirtualDesktopApi(),
             >= 22000 => new Windows11_22000.VirtualDesktopApi(),
             >= 17763 => new Windows10_17763.VirtualDesktopApi(),
-            _ => throw new Exception($"Unsupported Windows version {releaseId}.{releaseBuildNumber}")
+            _ => throw new Exception($"Unsupported Windows version {releaseIdNumber}.{releaseBuildNumber}")
         };
     }
 }
