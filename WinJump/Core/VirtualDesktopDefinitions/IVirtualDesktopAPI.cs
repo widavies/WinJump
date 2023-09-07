@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text.RegularExpressions;
 using Microsoft.Win32;
 
 namespace WinJump.Core.VirtualDesktopDefinitions;
@@ -32,28 +33,24 @@ public interface IVirtualDesktopAPI : IDisposable {
     /// <returns>A virtual desktop API for the installed Windows version</returns>
     /// <exception cref="Exception">If the particular Windows version is unsupported</exception>
     public static IVirtualDesktopAPI Create() {
-        string? releaseId = Registry.LocalMachine.OpenSubKey("SOFTWARE")?.OpenSubKey("Microsoft")?
-            .OpenSubKey("Windows NT")?.OpenSubKey("CurrentVersion")?.GetValue("CurrentBuildNumber")?.ToString();
-
+        OperatingSystem osInfo = Environment.OSVersion;
+        
         string? releaseBuild = Registry.LocalMachine.OpenSubKey("SOFTWARE")?.OpenSubKey("Microsoft")?
             .OpenSubKey("Windows NT")?.OpenSubKey("CurrentVersion")?.GetValue("UBR")?.ToString();
         
-        if(!int.TryParse(releaseId, out int releaseIdNumber)) {
-            throw new Exception($"Unrecognized Windows release id version {releaseId}.{releaseBuild}");
-        }
-
         if(!int.TryParse(releaseBuild, out int releaseBuildNumber)) {
-            throw new Exception($"Unrecognized Windows build version {releaseId}.{releaseBuild}");
+            throw new Exception($"Unrecognized Windows build version {osInfo.Version.Build}.{releaseBuild}");
         }
 
-        return releaseIdNumber switch {
+        return osInfo.Version.Build switch {
             // Work out the proper desktop wrapper
             >= 22621 => releaseBuildNumber >= 2215
                 ? new Windows11_22621_2215.VirtualDesktopApi()
                 : new Windows11_22621.VirtualDesktopApi(),
             >= 22000 => new Windows11_22000.VirtualDesktopApi(),
             >= 17763 => new Windows10_17763.VirtualDesktopApi(),
-            _ => throw new Exception($"Unsupported Windows version {releaseIdNumber}.{releaseBuildNumber}")
+            // Just try the most recent as a last ditch effort
+            _ => new Windows11_22621_2215.VirtualDesktopApi()
         };
     }
 }
