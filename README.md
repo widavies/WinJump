@@ -13,7 +13,7 @@ Features:
 
 ## Installation
 1. [Download](https://github.com/widavies/WinJump/releases/)
-> Note, you may receive a Windows smartscreen warning when you try to run WinJump. I do not feel like spending hundreds of dollars on a certificate, so just click "More options" and click "Run anyway"
+> Note, you may receive a Windows smartscreen warning when you try to run WinJump. Click "More options" and click "Run anyway"
 2. Press Ctrl+R and type `shell:startup`
 3. Drag the `WinJump.exe` to the shell startup folder
 
