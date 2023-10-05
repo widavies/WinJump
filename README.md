@@ -10,6 +10,8 @@ Features:
 
 - Group virtual desktops together and cycle through them with a custom shortcut key
 - Configure a shortcut to jump back and forth between two virtual desktops
+- Move applications to a specific desktop with a shortcut
+- Scroll with your mouse over the taskbar to quickly navigate between
 
 ## Installation
 1. [Download](https://github.com/widavies/WinJump/releases/)
@@ -30,6 +32,8 @@ There are three blocks:
 - `toggle-groups` let you group desktops together and cycle through them with a keyboard shortcut
 - `jump-current-goes-to-last` lets you decide whether jumping to the desktop you're already on does A) nothing or B) goes to your previous desktop
 - `jump-to` lets you define shortcuts that jump directly to a desktop
+- `move-window-to-desktop` lets you specify a custom shortcut modifier. When pressed, the currently focused window will be moved to the desktop specified by the number key you press.
+- `change-desktops-with-scroll` should desktops automatically switch by scrolling over the taskbar?
 
 The `toggle-groups` and `jump-to` blocks contain a list of items, each item has a `shortcut` property. This shortcut must be a combination of:
 `win`, `alt`, `shift`, and `ctrl`, it must be terminated by a key listed [here](https://learn.microsoft.com/en-us/dotnet/api/system.windows.forms.keys?view=windowsdesktop-7.0),
