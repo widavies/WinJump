@@ -30,6 +30,7 @@ public class WinJumpManager : IDisposable {
     private readonly STAThread? _thread; // tied exactly to the lifecycle of explorer.exe
     private readonly ExplorerMonitor _explorerMonitor = new();
     private readonly KeyboardHook _keyboardHook = new();
+    private readonly MouseHook _mouseHook = new();
     private bool _lightMode { get; set; }
     private uint _currentDesktop { get; set; }
     private uint? _lastDesktop { get; set; }
@@ -68,6 +69,10 @@ public class WinJumpManager : IDisposable {
             }
         }
 
+        if(config.ChangeDesktopsWithScroll) {
+            _mouseHook.Register();
+        }
+
         // Add handler for hotkey press events
         _keyboardHook.KeyPressed += (_, args) => {
             Shortcut pressed = new Shortcut {
@@ -98,6 +103,22 @@ public class WinJumpManager : IDisposable {
             if(config.JumpWindowToDesktop.Shortcut.ModifiersEqual(pressed) && pressed.Keys is >= Keys.D0 and <= Keys.D9) {
                 // Move the current window to the next desktop
                 _thread?.MoveWindowToDesktop(pressed.Keys == Keys.D0 ? 9 : pressed.Keys - Keys.D0 - 1);
+            }
+        };
+
+        // Add a handler for mouse scroll events
+        _mouseHook.MouseScrolled += (_, args) => {
+            // Check to make sure the mouse event happened over the taskbar
+            if(args.y < SystemParameters.PrimaryScreenHeight - 40) return;
+
+            int? current = _thread?.GetCurrentDesktop();
+
+            if(current != null) {
+                if(args.up) {
+                    _thread?.JumpToNoHack((uint) (current.Value + 1));
+                } else {
+                    _thread?.JumpToNoHack((uint) (current.Value - 1));
+                }
             }
         };
 
@@ -136,6 +157,7 @@ public class WinJumpManager : IDisposable {
         _thread?.Dispose();
         _explorerMonitor.Dispose();
         _keyboardHook.Dispose();
+        _mouseHook.Dispose();
         GC.SuppressFinalize(this);
     }
 }
@@ -217,6 +239,12 @@ internal sealed class STAThread : IDisposable {
             api.JumpToDesktop((int) index);
         }, true);
     }
+    
+    public void JumpToNoHack(uint index) {
+        WrapCall(() => {
+            api.JumpToDesktop((int) index);
+        }, false);
+    }
 
     // desktops must be 0-indexed
     public void JumpToNext(int[] desktops) {
@@ -276,7 +304,7 @@ internal sealed class STAThread : IDisposable {
                     IntPtr wnd = FindWindow(null, "Program Manager");
                     ShowWindow(wnd, 6);
                 }
-                
+
                 result.Add(true);
             } catch(COMException) {
                 // Specifically ignored. If explorer.exe dies these calls will start failing.

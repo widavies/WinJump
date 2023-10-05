@@ -65,9 +65,9 @@ namespace WinJump.Core.VirtualDesktopDefinitions {
             }
 
             // Helpers
-            private static IVirtualDesktop GetDesktop(int index) {
+            private static IVirtualDesktop? GetDesktop(int index) {
                 int count = VirtualDesktopManagerInternal.GetCount(IntPtr.Zero);
-                if(index < 0 || index >= count) throw new ArgumentOutOfRangeException("index");
+                if(index < 0 || index >= count) return null;
                 IObjectArray desktops;
                 VirtualDesktopManagerInternal.GetDesktops(IntPtr.Zero, out desktops);
                 object objdesktop;
@@ -96,7 +96,8 @@ namespace WinJump.Core.VirtualDesktopDefinitions {
             }
 
             internal static void SwitchDesktop(int index) {
-                IVirtualDesktop desktop = GetDesktop(index);
+                IVirtualDesktop? desktop = GetDesktop(index);
+                if(desktop == null) return;
                 VirtualDesktopManagerInternal.SwitchDesktop(IntPtr.Zero, desktop);
                 Marshal.ReleaseComObject(desktop);
             }

@@ -60,6 +60,7 @@ Below is an example configuration file that changes the shortcut to `alt+N` to j
   "move-window-to-desktop": {
     "shortcut": "alt+shift"
   },
+  "change-desktops-with-scroll": false,
   "jump-to": [
     {
       "shortcut": "alt+d1",
