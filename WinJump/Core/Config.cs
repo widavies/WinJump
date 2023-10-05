@@ -24,6 +24,9 @@ internal sealed class Config {
     [JsonProperty("jump-current-goes-to-last")]
     public required bool JumpCurrentGoesToLast { get; set; }
     
+    [JsonProperty("change-desktops-with-scroll")]
+    public required bool ChangeDesktopsWithScroll { get; set; }
+    
     public static Config Load() {
         try {
             EnsureCreated();
@@ -99,7 +102,8 @@ internal sealed class Config {
         return new Config {
             JumpTo = jumpTo,
             ToggleGroups = new List<ToggleGroup>(),
-            JumpCurrentGoesToLast = true
+            JumpCurrentGoesToLast = true,
+            ChangeDesktopsWithScroll = false
         };
     }
 }

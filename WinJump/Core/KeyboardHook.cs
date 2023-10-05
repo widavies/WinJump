@@ -86,7 +86,7 @@ public sealed class KeyboardHook : IDisposable {
         for (int i = _currentId; i > 0; i--) {
             UnregisterHotKey(_window.Handle, i);
         }
-
+        
         // dispose the inner native window.
         _window.Dispose();
     }
