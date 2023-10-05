@@ -5,9 +5,10 @@ using System.Diagnostics;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading;
-using System.Windows;
+using System.Windows.Forms;
 using WinJump.Core.VirtualDesktopDefinitions;
 using WinJump.UI;
+using Application = System.Windows.Application;
 
 namespace WinJump.Core;
 
@@ -47,6 +48,11 @@ public class WinJumpManager : IDisposable {
             () => {
                 return config.ToggleGroups.Select(t => t.Shortcut).All(shortcut =>
                     _keyboardHook.RegisterHotKey(shortcut.ModifierKeys, shortcut.Keys));
+            },
+            () => {
+                // Enumerable from Keys.D0 to Keys.D9
+                return Enumerable.Range((int) Keys.D0, 10).All(key =>
+                    _keyboardHook.RegisterHotKey(config.JumpWindowToDesktop.Shortcut.ModifierKeys, (Keys) key));
             }
         };
 
@@ -86,6 +92,12 @@ public class WinJumpManager : IDisposable {
 
             if(toggleGroup != null) {
                 _thread?.JumpToNext(toggleGroup.Desktops.Select(x => x - 1).ToArray());
+            }
+            
+            // Is it the move window shortcut?
+            if(config.JumpWindowToDesktop.Shortcut.ModifiersEqual(pressed) && pressed.Keys is >= Keys.D0 and <= Keys.D9) {
+                // Move the current window to the next desktop
+                _thread?.MoveWindowToDesktop(pressed.Keys == Keys.D0 ? 9 : pressed.Keys - Keys.D0 - 1);
             }
         };
 
@@ -216,6 +228,14 @@ internal sealed class STAThread : IDisposable {
             int next = desktops[(index + 1) % desktops.Length];
 
             api.JumpToDesktop(next);
+        }, true);
+    }
+
+    public void MoveWindowToDesktop(int desktop) {
+        if(ctx == null) throw new ObjectDisposedException("STAThread");
+        
+        WrapCall(() => {
+            api.MoveFocusedWindowToDesktop(desktop);
         }, true);
     }
 

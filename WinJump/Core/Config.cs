@@ -15,6 +15,9 @@ internal sealed class Config {
         Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
         ".winjump");
 
+    [JsonProperty("move-window-to-desktop")]
+    public required JumpWindowToDesktop JumpWindowToDesktop { get; set; }
+
     [JsonProperty("toggle-groups")]
     public required List<ToggleGroup> ToggleGroups { get; set; }
 
@@ -23,56 +26,67 @@ internal sealed class Config {
 
     [JsonProperty("jump-current-goes-to-last")]
     public required bool JumpCurrentGoesToLast { get; set; }
-    
+
     public static Config Load() {
         try {
             EnsureCreated();
-            
+
             string content = File.ReadAllText(LOCATION);
 
             var config = JsonConvert.DeserializeObject<Config>(content);
 
-            if (config == null) {
+            if(config == null) {
                 throw new Exception("Failed to deserialize config file");
             }
 
             // Check for jump tos with duplicate shortcuts
-            for (int i = 0; i < config.JumpTo.Count; i++) {
+            for(int i = 0; i < config.JumpTo.Count; i++) {
                 var shortcut = config.JumpTo[i].Shortcut;
-                for (int j = i + 1; j < config.JumpTo.Count; j++) {
-                    if (config.JumpTo[j].Shortcut.IsEqual(shortcut)) {
+                for(int j = i + 1; j < config.JumpTo.Count; j++) {
+                    if(config.JumpTo[j].Shortcut.IsEqual(shortcut)) {
                         throw new Exception("Duplicate jump to shortcut");
                     }
 
-                    if (config.JumpTo[i].Desktop <= 0) {
+                    if(config.JumpTo[i].Desktop <= 0) {
                         throw new Exception("Invalid desktop number");
                     }
                 }
             }
 
             // Check for toggle groups with duplicate shortcuts
-            for (int i = 0; i < config.ToggleGroups.Count; i++) {
+            for(int i = 0; i < config.ToggleGroups.Count; i++) {
                 var shortcut = config.ToggleGroups[i].Shortcut;
-                for (int j = i + 1; j < config.ToggleGroups.Count; j++) {
-                    if (config.ToggleGroups[j].Shortcut.IsEqual(shortcut)) {
+                for(int j = i + 1; j < config.ToggleGroups.Count; j++) {
+                    if(config.ToggleGroups[j].Shortcut.IsEqual(shortcut)) {
                         throw new Exception("Duplicate toggle group shortcut");
                     }
 
-                    if (config.ToggleGroups[i].Desktops.Any((d) => d <= 0)) {
+                    if(config.ToggleGroups[i].Desktops.Any((d) => d <= 0)) {
                         throw new Exception("Invalid desktop number");
                     }
                 }
             }
+            
+            // Make sure that the move window to desktop doesn't have overlapping modifiers with any of the others
+            var moveWindowToDesktopShortcut = config.JumpWindowToDesktop.Shortcut;
+            
+            if(config.JumpTo.Any((jumpTo) => jumpTo.Shortcut.ModifiersEqual(moveWindowToDesktopShortcut))) {
+                throw new Exception("Move window to desktop shortcut overlaps with jump to shortcut");
+            }
+            
+            if(config.ToggleGroups.Any((toggleGroup) => toggleGroup.Shortcut.ModifiersEqual(moveWindowToDesktopShortcut))) {
+                throw new Exception("Move window to desktop shortcut overlaps with toggle group shortcut");
+            }
 
             return config;
-        } catch (Exception) {
+        } catch(Exception) {
             return Default();
         }
     }
 
     public static void EnsureCreated() {
-        if (File.Exists(LOCATION)) return;
-        
+        if(File.Exists(LOCATION)) return;
+
         var config = Default();
         string content = JsonConvert.SerializeObject(config, Formatting.Indented);
         File.WriteAllText(LOCATION, content);
@@ -86,7 +100,7 @@ internal sealed class Config {
         var jumpTo = new List<JumpTo>();
 
         uint desktop = 1;
-        for (var k = Keys.D0; k <= Keys.D9; k++) {
+        for(var k = Keys.D0; k <= Keys.D9; k++) {
             jumpTo.Add(new JumpTo {
                 Shortcut = new Shortcut {
                     ModifierKeys = ModifierKeys.Alt,
@@ -97,6 +111,12 @@ internal sealed class Config {
         }
 
         return new Config {
+            JumpWindowToDesktop = new JumpWindowToDesktop {
+                Shortcut = new Shortcut {
+                    ModifierKeys = ModifierKeys.Alt,
+                    Keys = Keys.Shift
+                }
+            },
             JumpTo = jumpTo,
             ToggleGroups = new List<ToggleGroup>(),
             JumpCurrentGoesToLast = true
@@ -104,12 +124,17 @@ internal sealed class Config {
     }
 }
 
+public sealed class JumpWindowToDesktop {
+    [JsonConverter(typeof(ShortcutConverter))]
+    public required Shortcut Shortcut { get; set; }
+}
+
 public sealed class ToggleGroup {
     [JsonConverter(typeof(ShortcutConverter))]
     public required Shortcut Shortcut { get; set; }
 
     public required List<int> Desktops { get; set; }
-    
+
     public bool IsEqual(ToggleGroup other) {
         return Shortcut.IsEqual(other.Shortcut);
     }
@@ -117,6 +142,7 @@ public sealed class ToggleGroup {
 
 public sealed class JumpTo {
     [JsonConverter(typeof(ShortcutConverter))]
+    [JsonProperty("shortcut")]
     public required Shortcut Shortcut { get; set; }
 
     [JsonProperty("desktop")]
@@ -141,6 +167,10 @@ public sealed class Shortcut {
     public bool IsEqual(Shortcut other) {
         return ModifierKeys == other.ModifierKeys && Keys == other.Keys;
     }
+    
+    public bool ModifiersEqual(Shortcut other) {
+        return ModifierKeys == other.ModifierKeys;
+    }
 
     // Parsing stuff
 
@@ -150,10 +180,10 @@ public sealed class Shortcut {
 
         ModifierKeys modifiers = 0;
 
-        while (stack.Count > 0) {
+        while(stack.Count > 0) {
             string token = stack.Dequeue();
 
-            if (LOOKUP.TryGetValue(token, out var value)) {
+            if(LOOKUP.TryGetValue(token, out var value)) {
                 modifiers |= value;
             } else {
                 return new Shortcut {
@@ -163,7 +193,10 @@ public sealed class Shortcut {
             }
         }
 
-        throw new Exception("Invalid shortcut");
+        return new Shortcut {
+            ModifierKeys = modifiers,
+            Keys = Keys.None
+        };
     }
 
     public override string ToString() {
@@ -176,7 +209,7 @@ public sealed class Shortcut {
 
 public sealed class ShortcutConverter : JsonConverter {
     public override void WriteJson(JsonWriter writer, object? value, JsonSerializer serializer) {
-        if (value is not Shortcut shortcut) {
+        if(value is not Shortcut shortcut) {
             throw new Exception("Can't serialize null shortcut");
         }
 

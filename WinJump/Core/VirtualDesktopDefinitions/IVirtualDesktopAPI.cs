@@ -28,6 +28,12 @@ public interface IVirtualDesktopAPI : IDisposable {
     void JumpToDesktop(int index);
 
     /// <summary>
+    /// Moves the currently focused window to the specified desktop.
+    /// </summary>
+    /// <param name="index"></param>
+    void MoveFocusedWindowToDesktop(int index);
+    
+    /// <summary>
     /// Creates the appropriate virtual desktop API definition for the current Windows version.
     /// </summary>
     /// <returns>A virtual desktop API for the installed Windows version</returns>
