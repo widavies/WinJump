@@ -5,9 +5,9 @@
         <TargetFramework>net7.0-windows</TargetFramework>
         <Nullable>enable</Nullable>
         <UseWPF>true</UseWPF>
-        <Version>2.0.4</Version>
-        <AssemblyVersion>2.0.7</AssemblyVersion>
-        <FileVersion>2.0.7</FileVersion>
+        <Version>2.0.8</Version>
+        <AssemblyVersion>2.0.8</AssemblyVersion>
+        <FileVersion>2.0.8</FileVersion>
     </PropertyGroup>
 
     <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
