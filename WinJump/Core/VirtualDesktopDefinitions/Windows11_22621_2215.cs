@@ -111,12 +111,13 @@ namespace WinJump.Core.VirtualDesktopDefinitions {
             }
 
             internal static void MoveCurrentlyFocusedToDesktop(int index) {
-                int processId;
                 IntPtr hWnd = GetForegroundWindow();
                 if(hWnd == IntPtr.Zero) throw new ArgumentNullException();
-                GetWindowThreadProcessId(hWnd, out processId);
+                GetWindowThreadProcessId(hWnd, out int processId);
 
                 var desktop = GetDesktop(index);
+
+                if(desktop == null) return;
                 
                 if(Environment.ProcessId == processId) {
                     // window of process
@@ -125,8 +126,7 @@ namespace WinJump.Core.VirtualDesktopDefinitions {
                         VirtualDesktopManager.MoveWindowToDesktop(hWnd, desktop.GetId());
                     } catch // window of process, but we are not the owner
                     {
-                        IApplicationView view;
-                        ApplicationViewCollection.GetViewForHwnd(hWnd, out view);
+                        ApplicationViewCollection.GetViewForHwnd(hWnd, out var view);
                         VirtualDesktopManagerInternal.MoveViewToDesktop(view, desktop);
                     }
                 } else {
