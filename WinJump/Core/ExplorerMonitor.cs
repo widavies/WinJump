@@ -64,7 +64,7 @@ public class ExplorerMonitor : IDisposable {
         RegistryKey? startupApp = Registry.CurrentUser.OpenSubKey(
             @"Software\Microsoft\Windows\CurrentVersion\Themes\Personalize", false);
 
-        object? val = startupApp?.GetValue("SystemUseLightTheme");
+        object? val = startupApp?.GetValue("SystemUsesLightTheme") ?? startupApp?.GetValue("SystemUseLightTheme");
 
         bool lightMode = (int) (val ?? 0) == 1;
         return lightMode;
