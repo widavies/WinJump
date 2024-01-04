@@ -18,6 +18,7 @@ Features:
 > Note, you may receive a Windows smartscreen warning when you try to run WinJump. Click "More options" and click "Run anyway"
 2. Press Ctrl+R and type `shell:startup`
 3. Drag the `WinJump.exe` to the shell startup folder
+4. Double click `WinJump.exe` to run it
 
 ### Config file
 
