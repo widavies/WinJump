@@ -39,18 +39,11 @@ public interface IVirtualDesktopAPI : IDisposable {
     /// <returns>A virtual desktop API for the installed Windows version</returns>
     /// <exception cref="Exception">If the particular Windows version is unsupported</exception>
     public static IVirtualDesktopAPI Create() {
-        OperatingSystem osInfo = Environment.OSVersion;
-        
-        string? releaseBuild = Registry.LocalMachine.OpenSubKey("SOFTWARE")?.OpenSubKey("Microsoft")?
-            .OpenSubKey("Windows NT")?.OpenSubKey("CurrentVersion")?.GetValue("UBR")?.ToString();
-        
-        if(!int.TryParse(releaseBuild, out int releaseBuildNumber)) {
-            throw new Exception($"Unrecognized Windows build version {osInfo.Version.Build}.{releaseBuild}");
-        }
+        WinVersion version = WinVersion.Determine();
 
-        return osInfo.Version.Build switch {
+        return version.Build switch {
             // Work out the proper desktop wrapper
-            >= 22621 => releaseBuildNumber >= 2215
+            >= 22621 => version.ReleaseBuild >= 2215
                 ? new Windows11_22621_2215.VirtualDesktopApi()
                 : new Windows11_22621.VirtualDesktopApi(),
             >= 22000 => new Windows11_22000.VirtualDesktopApi(),

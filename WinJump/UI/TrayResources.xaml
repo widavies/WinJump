@@ -8,6 +8,7 @@
         <tb:TaskbarIcon.ContextMenu>
             <ContextMenu>
                 <MenuItem Header="{Binding Version}" IsEnabled="False" />
+                <MenuItem Header="{Binding WinVersion}" IsEnabled="False" />
                 <MenuItem Header="Open config file" Command="{Binding OnOpenConfig}" />
                 <MenuItem Header="Reload config file" Command="{Binding .ReloadConfig}"></MenuItem>
                 <MenuItem Header="View documentation" Command="{Binding ViewDocumentation}" />

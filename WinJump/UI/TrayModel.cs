@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Input;
+using Microsoft.Win32;
 using WinJump.Core;
 
 namespace WinJump.UI;
@@ -34,7 +35,7 @@ public class TrayModel {
             string? currentExecutablePath = Process.GetCurrentProcess().MainModule?.FileName;
 
             if(currentExecutablePath == null) return;
-            
+
             Process.Start(currentExecutablePath);
             Application.Current.Shutdown();
         }
@@ -70,6 +71,17 @@ public class TrayModel {
 
     public string Version =>
         $"WinJump {Assembly.GetEntryAssembly()?.GetName().Version?.ToString()}";
+
+    public string WinVersion {
+        get {
+            try {
+                WinVersion winVersion = Core.WinVersion.Determine();
+                return $"Windows build: {winVersion.Build}.{winVersion.ReleaseBuild}";
+            } catch {
+                return "Windows build: Unknown";
+            }
+        }
+    }
 }
 
 public class DelegateCommand : ICommand {
