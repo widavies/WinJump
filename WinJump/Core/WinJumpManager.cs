@@ -36,6 +36,8 @@ public class WinJumpManager : IDisposable {
     private uint _currentDesktop { get; set; }
     private uint? _lastDesktop { get; set; }
 
+    public static bool LastLoadRequiredExplorerRestart = false;
+
     public WinJumpManager(DesktopChanged desktopChanged) {
         // Load config file
         var config = Config.Load();
@@ -59,6 +61,7 @@ public class WinJumpManager : IDisposable {
         };
 
         if(!registerShortcuts.All(x => x.Invoke())) {
+            LastLoadRequiredExplorerRestart = true;
             // If we failed to register the shortcuts, we need to kill explorer and try again
             // and restart it after we've registered the shortcuts
             _explorerMonitor.Kill();
@@ -68,6 +71,8 @@ public class WinJumpManager : IDisposable {
                 Application.Current.Shutdown();
                 return;
             }
+        } else {
+            LastLoadRequiredExplorerRestart = false;
         }
 
         if(config.ChangeDesktopsWithScroll) {
@@ -265,7 +270,7 @@ internal sealed class STAThread : IDisposable {
         
         WrapCall(() => {
             api.MoveFocusedWindowToDesktop(desktop);
-        }, true);
+        }, false);
     }
 
     private void Initialize(object? sender, EventArgs e) {

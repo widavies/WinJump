@@ -55,12 +55,14 @@ public class TrayModel {
         CanExecuteFunc = () => true,
         CommandAction = () => {
             // Restart explorer to clean out any registrations that were present
+            // Only need to kill Explorer if we registered "win" shortcuts
+            if(WinJumpManager.LastLoadRequiredExplorerRestart) {
+                var killExplorer = Process.Start("cmd.exe", "/c taskkill /f /im explorer.exe");
 
-            var killExplorer = Process.Start("cmd.exe", "/c taskkill /f /im explorer.exe");
+                killExplorer.WaitForExit();
 
-            killExplorer.WaitForExit();
-
-            Process.Start(Environment.SystemDirectory + "\\..\\explorer.exe");
+                Process.Start(Environment.SystemDirectory + "\\..\\explorer.exe");
+            }
 
             Application.Current.Shutdown();
         }
