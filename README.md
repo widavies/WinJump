@@ -11,7 +11,7 @@ Features:
 - Group virtual desktops together and cycle through them with a custom shortcut key
 - Configure a shortcut to jump back and forth between two virtual desktops
 - Move applications to a specific desktop with a shortcut
-- Scroll with your mouse over the taskbar to quickly navigate between
+- Scroll with your mouse over the taskbar to quickly navigate between virtual desktops
 
 ## Installation
 1. [Download](https://github.com/widavies/WinJump/releases/)
