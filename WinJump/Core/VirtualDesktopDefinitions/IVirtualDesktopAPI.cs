@@ -1,6 +1,5 @@
 ﻿using System;
-using System.Text.RegularExpressions;
-using Microsoft.Win32;
+using WinJump.Core.VirtualDesktopDefinitions.Windows11_22621_2215;
 
 namespace WinJump.Core.VirtualDesktopDefinitions;
 
@@ -32,7 +31,7 @@ public interface IVirtualDesktopAPI : IDisposable {
     /// </summary>
     /// <param name="index"></param>
     void MoveFocusedWindowToDesktop(int index);
-    
+
     /// <summary>
     /// Creates the appropriate virtual desktop API definition for the current Windows version.
     /// </summary>
@@ -44,12 +43,12 @@ public interface IVirtualDesktopAPI : IDisposable {
         return version.Build switch {
             // Work out the proper desktop wrapper
             >= 22621 => version.ReleaseBuild >= 2215
-                ? new Windows11_22621_2215.VirtualDesktopApi()
+                ? new VirtualDesktopApi()
                 : new Windows11_22621.VirtualDesktopApi(),
             >= 22000 => new Windows11_22000.VirtualDesktopApi(),
             >= 17763 => new Windows10_17763.VirtualDesktopApi(),
             // Just try the most recent as a last ditch effort
-            _ => new Windows11_22621_2215.VirtualDesktopApi()
+            _ => new VirtualDesktopApi()
         };
     }
 }

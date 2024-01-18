@@ -62,9 +62,24 @@ Below is an example configuration file that changes the shortcut to `alt+N` to j
     }
   ],
   "jump-current-goes-to-last": false,
-  "move-window-to-desktop": {
-    "shortcut": "alt+shift"
-  },
+  "move-window-to": [
+    {
+      "shortcut": "alt+shift+d1",
+      "desktop": 1
+    },
+    {
+      "shortcut": "alt+shift+d2",
+      "desktop": 2
+    },
+    {
+      "shortcut": "alt+shift+d3",
+      "desktop": 3
+    },
+    {
+      "shortcut": "alt+shift+d4",
+      "desktop": 4
+    }
+  ],
   "change-desktops-with-scroll": false,
   "jump-to": [
     {
