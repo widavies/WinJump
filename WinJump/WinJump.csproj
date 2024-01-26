@@ -5,9 +5,9 @@
         <TargetFramework>net8.0-windows</TargetFramework>
         <Nullable>enable</Nullable>
         <UseWPF>true</UseWPF>
-        <Version>2.0.10</Version>
-        <AssemblyVersion>2.0.10</AssemblyVersion>
-        <FileVersion>2.0.10</FileVersion>
+        <Version>2.0.11</Version>
+        <AssemblyVersion>2.0.11</AssemblyVersion>
+        <FileVersion>2.0.11</FileVersion>
     </PropertyGroup>
 
     <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">

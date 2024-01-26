@@ -2,7 +2,7 @@
 using System.Runtime.InteropServices;
 
 namespace WinJump.Core.VirtualDesktopDefinitions {
-    namespace Windows11_22621_2215 {
+    namespace Windows11_22631_3085 {
         public class VirtualDesktopApi : IVirtualDesktopAPI {
             public event OnDesktopChanged? OnDesktopChanged;
             private readonly uint cookie;
@@ -255,7 +255,7 @@ namespace WinJump.Core.VirtualDesktopDefinitions {
 
         [ComImport]
         [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
-        [Guid("A3175F2D-239C-4BD2-8AA0-EEBA8B0B138E")]
+        [Guid("53F5CA0B-158F-4124-900C-057158060B27")]
         internal interface IVirtualDesktopManagerInternal {
             int GetCount();
             void MoveViewToDesktop(IApplicationView view, IVirtualDesktop desktop);
@@ -298,7 +298,7 @@ namespace WinJump.Core.VirtualDesktopDefinitions {
         }
 
         [ComImport]
-        [Guid("B287FA1C-7771-471A-A2DF-9B6B21F0D675")]
+        [Guid("B9E5E94D-233E-49AB-AF5C-2B4541C3AADE")]
         [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
         internal interface IVirtualDesktopNotification {
             void VirtualDesktopCreated(IVirtualDesktop pDesktop);
