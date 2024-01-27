@@ -6,7 +6,6 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Windows;
-using System.Windows.Forms;
 using WinJump.Core.VirtualDesktopDefinitions;
 using WinJump.UI;
 using Application = System.Windows.Application;
@@ -36,11 +35,13 @@ public class WinJumpManager : IDisposable {
     private uint _currentDesktop { get; set; }
     private uint? _lastDesktop { get; set; }
 
+    public static bool LastLoadRequiredExplorerRestart;
+
     public WinJumpManager(DesktopChanged desktopChanged) {
         // Load config file
         var config = Config.Load();
 
-        // Attempt to register the shortcuts. 
+        // Attempt to register the shortcuts.
 
         var registerShortcuts = new List<Func<bool>> {
             () => {
@@ -52,13 +53,13 @@ public class WinJumpManager : IDisposable {
                     _keyboardHook.RegisterHotKey(shortcut.ModifierKeys, shortcut.Keys));
             },
             () => {
-                // Enumerable from Keys.D0 to Keys.D9
-                return Enumerable.Range((int) Keys.D0, 10).All(key =>
-                    _keyboardHook.RegisterHotKey(config.JumpWindowToDesktop.Shortcut.ModifierKeys, (Keys) key));
+                return config.MoveWindowTo.Select(t => t.Shortcut).All(shortcut =>
+                    _keyboardHook.RegisterHotKey(shortcut.ModifierKeys, shortcut.Keys));
             }
         };
 
         if(!registerShortcuts.All(x => x.Invoke())) {
+            LastLoadRequiredExplorerRestart = true;
             // If we failed to register the shortcuts, we need to kill explorer and try again
             // and restart it after we've registered the shortcuts
             _explorerMonitor.Kill();
@@ -68,6 +69,8 @@ public class WinJumpManager : IDisposable {
                 Application.Current.Shutdown();
                 return;
             }
+        } else {
+            LastLoadRequiredExplorerRestart = false;
         }
 
         if(config.ChangeDesktopsWithScroll) {
@@ -94,16 +97,24 @@ public class WinJumpManager : IDisposable {
                 return;
             }
 
+            // Finally, look for move window shortcuts
+
+            JumpWindowToDesktop? moveTo = config.MoveWindowTo.FirstOrDefault(x => x.Shortcut.IsEqual(pressed));
+
+            // Is it the move window shortcut?
+            if(moveTo != null) {
+                // Move the current window to the specified desktop
+                _thread?.MoveWindowToDesktop(moveTo.Desktop - 1);
+            }
+
+            // Finally, look for a toggle group
+
             ToggleGroup? toggleGroup = config.ToggleGroups.FirstOrDefault(x => x.Shortcut.IsEqual(pressed));
 
             if(toggleGroup != null) {
                 _thread?.JumpToNext(toggleGroup.Desktops.Select(x => x - 1).ToArray());
-            }
-            
-            // Is it the move window shortcut?
-            if(config.JumpWindowToDesktop.Shortcut.ModifiersEqual(pressed) && pressed.Keys is >= Keys.D0 and <= Keys.D9) {
-                // Move the current window to the next desktop
-                _thread?.MoveWindowToDesktop(pressed.Keys == Keys.D0 ? 9 : pressed.Keys - Keys.D0 - 1);
+
+                return;
             }
         };
 
@@ -240,11 +251,11 @@ internal sealed class STAThread : IDisposable {
             api.JumpToDesktop((int) index);
         }, true);
     }
-    
+
     public void JumpToNoHack(uint index) {
         WrapCall(() => {
             api.JumpToDesktop((int) index);
-        }, false);
+        });
     }
 
     // desktops must be 0-indexed
@@ -260,12 +271,12 @@ internal sealed class STAThread : IDisposable {
         }, true);
     }
 
-    public void MoveWindowToDesktop(int desktop) {
+    public void MoveWindowToDesktop(uint desktop) {
         if(ctx == null) throw new ObjectDisposedException("STAThread");
-        
+
         WrapCall(() => {
-            api.MoveFocusedWindowToDesktop(desktop);
-        }, true);
+            api.MoveFocusedWindowToDesktop((int) desktop);
+        });
     }
 
     private void Initialize(object? sender, EventArgs e) {

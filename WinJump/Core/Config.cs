@@ -15,8 +15,8 @@ internal sealed class Config {
         Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
         ".winjump");
 
-    [JsonProperty("move-window-to-desktop")]
-    public required JumpWindowToDesktop JumpWindowToDesktop { get; set; }
+    [JsonProperty("move-window-to")]
+    public required List<JumpWindowToDesktop> MoveWindowTo { get; set; }
 
     [JsonProperty("toggle-groups")]
     public required List<ToggleGroup> ToggleGroups { get; set; }
@@ -26,10 +26,10 @@ internal sealed class Config {
 
     [JsonProperty("jump-current-goes-to-last")]
     public required bool JumpCurrentGoesToLast { get; set; }
-    
+
     [JsonProperty("change-desktops-with-scroll")]
     public required bool ChangeDesktopsWithScroll { get; set; }
-    
+
     public static Config Load() {
         try {
             EnsureCreated();
@@ -69,16 +69,19 @@ internal sealed class Config {
                     }
                 }
             }
-            
-            // Make sure that the move window to desktop doesn't have overlapping modifiers with any of the others
-            var moveWindowToDesktopShortcut = config.JumpWindowToDesktop.Shortcut;
-            
-            if(config.JumpTo.Any((jumpTo) => jumpTo.Shortcut.ModifiersEqual(moveWindowToDesktopShortcut))) {
-                throw new Exception("Move window to desktop shortcut overlaps with jump to shortcut");
-            }
-            
-            if(config.ToggleGroups.Any((toggleGroup) => toggleGroup.Shortcut.ModifiersEqual(moveWindowToDesktopShortcut))) {
-                throw new Exception("Move window to desktop shortcut overlaps with toggle group shortcut");
+
+            // Check for move windows with duplicate shortcuts
+            for(int i = 0; i < config.MoveWindowTo.Count; i++) {
+                var shortcut = config.MoveWindowTo[i].Shortcut;
+                for(int j = i + 1; j < config.MoveWindowTo.Count; j++) {
+                    if(config.MoveWindowTo[j].Shortcut.IsEqual(shortcut)) {
+                        throw new Exception("Duplicate move window shortcut");
+                    }
+
+                    if(config.MoveWindowTo[i].Desktop <= 0) {
+                        throw new Exception("Invalid desktop number");
+                    }
+                }
             }
 
             return config;
@@ -114,14 +117,15 @@ internal sealed class Config {
         }
 
         return new Config {
-            JumpWindowToDesktop = new JumpWindowToDesktop {
+            MoveWindowTo = jumpTo.Select(x => new JumpWindowToDesktop {
                 Shortcut = new Shortcut {
-                    ModifierKeys = ModifierKeys.Alt,
-                    Keys = Keys.Shift
-                }
-            },
+                    Keys = x.Shortcut.Keys,
+                    ModifierKeys = x.Shortcut.ModifierKeys | ModifierKeys.Shift
+                },
+                Desktop = x.Desktop
+            }).ToList(),
             JumpTo = jumpTo,
-            ToggleGroups = new List<ToggleGroup>(),
+            ToggleGroups = [],
             JumpCurrentGoesToLast = true,
             ChangeDesktopsWithScroll = false
         };
@@ -131,6 +135,8 @@ internal sealed class Config {
 public sealed class JumpWindowToDesktop {
     [JsonConverter(typeof(ShortcutConverter))]
     public required Shortcut Shortcut { get; set; }
+
+    public required uint Desktop { get; set; }
 }
 
 public sealed class ToggleGroup {
@@ -171,7 +177,7 @@ public sealed class Shortcut {
     public bool IsEqual(Shortcut other) {
         return ModifierKeys == other.ModifierKeys && Keys == other.Keys;
     }
-    
+
     public bool ModifiersEqual(Shortcut other) {
         return ModifierKeys == other.ModifierKeys;
     }

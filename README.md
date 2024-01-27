@@ -11,13 +11,14 @@ Features:
 - Group virtual desktops together and cycle through them with a custom shortcut key
 - Configure a shortcut to jump back and forth between two virtual desktops
 - Move applications to a specific desktop with a shortcut
-- Scroll with your mouse over the taskbar to quickly navigate between
+- Scroll with your mouse over the taskbar to quickly navigate between virtual desktops
 
 ## Installation
 1. [Download](https://github.com/widavies/WinJump/releases/)
 > Note, you may receive a Windows smartscreen warning when you try to run WinJump. Click "More options" and click "Run anyway"
 2. Press Ctrl+R and type `shell:startup`
 3. Drag the `WinJump.exe` to the shell startup folder
+4. Double click `WinJump.exe` to run it
 
 ### Config file
 
@@ -61,9 +62,24 @@ Below is an example configuration file that changes the shortcut to `alt+N` to j
     }
   ],
   "jump-current-goes-to-last": false,
-  "move-window-to-desktop": {
-    "shortcut": "alt+shift"
-  },
+  "move-window-to": [
+    {
+      "shortcut": "alt+shift+d1",
+      "desktop": 1
+    },
+    {
+      "shortcut": "alt+shift+d2",
+      "desktop": 2
+    },
+    {
+      "shortcut": "alt+shift+d3",
+      "desktop": 3
+    },
+    {
+      "shortcut": "alt+shift+d4",
+      "desktop": 4
+    }
+  ],
   "change-desktops-with-scroll": false,
   "jump-to": [
     {
