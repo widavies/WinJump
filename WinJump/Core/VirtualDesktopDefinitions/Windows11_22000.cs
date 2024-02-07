@@ -22,7 +22,7 @@ namespace WinJump.Core.VirtualDesktopDefinitions {
             }
 
             public void MoveFocusedWindowToDesktop(int index) {
-                throw new NotImplementedException();
+                DesktopManager.MoveCurrentlyFocusedToDesktop(index);
             }
 
             public void Dispose() {
@@ -42,12 +42,12 @@ namespace WinJump.Core.VirtualDesktopDefinitions {
 
             [DllImport("user32.dll")]
             private static extern uint GetWindowThreadProcessId(IntPtr hWnd, out int lpdwProcessId);
-            
+
             private static IVirtualDesktopManagerInternal VirtualDesktopManagerInternal;
             internal static IVirtualDesktopNotificationService VirtualDesktopNotificationService;
             internal static IApplicationViewCollection ApplicationViewCollection;
             internal static IVirtualDesktopManager VirtualDesktopManager;
-            
+
             static DesktopManager() {
                 if(Activator.CreateInstance(Type.GetTypeFromCLSID(Guids.CLSID_ImmersiveShell) ??
                                             throw new Exception("Failed to get shell")) is not IServiceProvider10
@@ -109,7 +109,7 @@ namespace WinJump.Core.VirtualDesktopDefinitions {
 
                 return GetIndex(vd);
             }
-            
+
             internal static void MoveCurrentlyFocusedToDesktop(int index) {
                 int processId;
                 IntPtr hWnd = GetForegroundWindow();
@@ -117,7 +117,7 @@ namespace WinJump.Core.VirtualDesktopDefinitions {
                 GetWindowThreadProcessId(hWnd, out processId);
 
                 var desktop = GetDesktop(index);
-                
+
                 if(Environment.ProcessId == processId) {
                     // window of process
                     try // the easy way (if we are owner)
@@ -192,8 +192,8 @@ namespace WinJump.Core.VirtualDesktopDefinitions {
             public static readonly Guid CLSID_VirtualDesktopManagerInternal =
                 new("C5E0CDCA-7B6E-41B2-9FC4-D93975CC467B");
 
-		public static readonly Guid CLSID_VirtualDesktopManager = new("AA509086-5CA9-4C25-8F95-589D3C07B48A");
-        
+            public static readonly Guid CLSID_VirtualDesktopManager = new("AA509086-5CA9-4C25-8F95-589D3C07B48A");
+
             public static readonly Guid CLSID_VirtualDesktopNotificationService =
                 new("A501FDEC-4A09-464C-AE4E-1B9C21B84918");
         }
@@ -286,7 +286,7 @@ namespace WinJump.Core.VirtualDesktopDefinitions {
             int Unknown11(int unknown);
             int Unknown12(out Size size1);
         }
-        
+
         [ComImport]
         [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
         [Guid("1841C6D7-4F9D-42C0-AF41-8747538F10E5")]
@@ -303,7 +303,7 @@ namespace WinJump.Core.VirtualDesktopDefinitions {
             int RegisterForApplicationViewChanges(object listener, out int cookie);
             int UnregisterForApplicationViewChanges(int cookie);
         }
-        
+
         [ComImport]
         [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
         [Guid("536D3495-B208-4CC9-AE26-DE8111275BF8")]
@@ -357,7 +357,7 @@ namespace WinJump.Core.VirtualDesktopDefinitions {
             Guid GetWindowDesktopId(IntPtr topLevelWindow);
             void MoveWindowToDesktop(IntPtr topLevelWindow, ref Guid desktopId);
         }
-        
+
         [ComImport]
         [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
         [Guid("0CD45E71-D927-4F15-8B0A-8FEF525337BF")]

@@ -122,7 +122,8 @@ internal sealed class Config {
                     Keys = x.Shortcut.Keys,
                     ModifierKeys = x.Shortcut.ModifierKeys | ModifierKeys.Shift
                 },
-                Desktop = x.Desktop
+                Desktop = x.Desktop,
+                Follow = false
             }).ToList(),
             JumpTo = jumpTo,
             ToggleGroups = [],
@@ -137,6 +138,8 @@ public sealed class JumpWindowToDesktop {
     public required Shortcut Shortcut { get; set; }
 
     public required uint Desktop { get; set; }
+
+    public required bool Follow { get; set; }
 }
 
 public sealed class ToggleGroup {

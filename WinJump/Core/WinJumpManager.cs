@@ -105,6 +105,10 @@ public class WinJumpManager : IDisposable {
             if(moveTo != null) {
                 // Move the current window to the specified desktop
                 _thread?.MoveWindowToDesktop(moveTo.Desktop - 1);
+
+                if(moveTo.Follow) {
+                    _thread?.JumpTo(moveTo.Desktop - 1);
+                }
             }
 
             // Finally, look for a toggle group

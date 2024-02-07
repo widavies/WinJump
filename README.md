@@ -65,19 +65,23 @@ Below is an example configuration file that changes the shortcut to `alt+N` to j
   "move-window-to": [
     {
       "shortcut": "alt+shift+d1",
-      "desktop": 1
+      "desktop": 1,
+      "follow": false
     },
     {
       "shortcut": "alt+shift+d2",
-      "desktop": 2
+      "desktop": 2,
+      "follow": false
     },
     {
       "shortcut": "alt+shift+d3",
-      "desktop": 3
+      "desktop": 3,
+      "follow": false
     },
     {
       "shortcut": "alt+shift+d4",
-      "desktop": 4
+      "desktop": 4,
+      "follow": false
     }
   ],
   "change-desktops-with-scroll": false,
