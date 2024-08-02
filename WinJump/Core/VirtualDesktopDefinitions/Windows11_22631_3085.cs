@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Runtime.InteropServices;
 
 namespace WinJump.Core.VirtualDesktopDefinitions {
@@ -117,6 +117,7 @@ namespace WinJump.Core.VirtualDesktopDefinitions {
                 GetWindowThreadProcessId(hWnd, out processId);
 
                 var desktop = GetDesktop(index);
+                if (desktop == null) return;
 
                 if(Environment.ProcessId == processId) {
                     // window of process
