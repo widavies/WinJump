@@ -21,6 +21,12 @@ public interface IVirtualDesktopAPI : IDisposable {
     int GetCurrentDesktop();
 
     /// <summary>
+    /// Returns how many virtual desktops there are.
+    /// </summary>
+    /// <returns>Virtual desktop count</returns>
+    public int GetDesktopCount();
+
+    /// <summary>
     /// Jumps to the virtual desktop.
     /// </summary>
     /// <param name="index">0-indexed desktop number. If it is invalid it will be ignored.</param>

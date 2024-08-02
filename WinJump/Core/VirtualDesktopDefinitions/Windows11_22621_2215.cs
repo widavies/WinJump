@@ -17,6 +17,10 @@ namespace WinJump.Core.VirtualDesktopDefinitions {
                 return DesktopManager.GetCurrentDesktopNum();
             }
 
+            public int GetDesktopCount() {
+                return DesktopManager.GetDesktopCount();
+            }
+
             public void JumpToDesktop(int index) {
                 DesktopManager.SwitchDesktop(index);
             }
@@ -108,6 +112,10 @@ namespace WinJump.Core.VirtualDesktopDefinitions {
                 var vd = VirtualDesktopManagerInternal.GetCurrentDesktop();
 
                 return GetIndex(vd);
+            }
+
+            internal static int GetDesktopCount() {
+                return VirtualDesktopManagerInternal.GetCount();
             }
 
             internal static void MoveCurrentlyFocusedToDesktop(int index) {
