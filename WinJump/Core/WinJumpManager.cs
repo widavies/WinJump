@@ -251,9 +251,24 @@ internal sealed class STAThread : IDisposable {
     }
 
     public void JumpTo(uint index) {
+ 
+        var allowJump = true;
         WrapCall(() => {
-            api.JumpToDesktop((int) index);
-        }, true);
+            // If the desktop is the same as the current one or doesn't exist, don't allow the jump
+            if(api.GetCurrentDesktop() == index) {
+                allowJump = false;
+            }
+            else if(index >= api.GetDesktopCount())
+            {
+                allowJump = false;
+            }
+        });
+
+        if(allowJump) {
+            WrapCall(() => {
+                api.JumpToDesktop((int) index);
+            }, true);
+        }
     }
 
     public void JumpToNoHack(uint index) {
