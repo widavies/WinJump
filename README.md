@@ -16,7 +16,7 @@ Features:
 ## Installation
 1. [Download](https://github.com/widavies/WinJump/releases/)
 > Note, you may receive a Windows smartscreen warning when you try to run WinJump. Click "More options" and click "Run anyway"
-2. Press Ctrl+R and type `shell:startup`
+2. Press Win+R and type `shell:startup`
 3. Drag the `WinJump.exe` to the shell startup folder
 4. Double click `WinJump.exe` to run it
 
@@ -134,5 +134,5 @@ Below is an example configuration file that changes the shortcut to `alt+N` to j
 > WinJump uses the reverse engineered Windows virtual desktop API. This means that the API often changes between Windows releases. Please see the [reverse engineering guide](https://github.com/widavies/WinJump/blob/main/WinJump/Core/VirtualDesktopDefinitions/README.md) if you're interested in contributing reverse-engineering definitions for new Windows releases.
 
 # Uninstall
-1. Press Ctrl+R and type `shell:startup`
+1. Press Win+R and type `shell:startup`
 2. Delete `WinJump.exe`
