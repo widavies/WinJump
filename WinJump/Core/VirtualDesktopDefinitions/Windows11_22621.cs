@@ -13,6 +13,11 @@ namespace WinJump.Core.VirtualDesktopDefinitions {
                 });
             }
 
+            public void CreateDesktop()
+            {
+                DesktopManager.CreateDesktop();
+            }
+
             public int GetCurrentDesktop() {
                 return DesktopManager.GetCurrentDesktopNum();
             }
@@ -104,6 +109,11 @@ namespace WinJump.Core.VirtualDesktopDefinitions {
                 if(desktop == null) return;
                 VirtualDesktopManagerInternal.SwitchDesktop(IntPtr.Zero, desktop);
                 Marshal.ReleaseComObject(desktop);
+            }
+
+            internal static void CreateDesktop()
+            {
+                VirtualDesktopManagerInternal.CreateDesktop(IntPtr.Zero);
             }
 
             internal static int GetCurrentDesktopNum() {
