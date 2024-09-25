@@ -35,6 +35,7 @@ There are three blocks:
 - `jump-to` lets you define shortcuts that jump directly to a desktop
 - `move-window-to-desktop` lets you specify a custom shortcut modifier. When pressed, the currently focused window will be moved to the desktop specified by the number key you press.
 - `change-desktops-with-scroll` should desktops automatically switch by scrolling over the taskbar?
+- `sticky-desktops` lets you set an amount of virtual desktops to be created when WinJump starts (max of 10)
 
 The `toggle-groups` and `jump-to` blocks contain a list of items, each item has a `shortcut` property. This shortcut must be a combination of:
 `win`, `alt`, `shift`, and `ctrl`, it must be terminated by a key listed [here](https://learn.microsoft.com/en-us/dotnet/api/system.windows.forms.keys?view=windowsdesktop-7.0),
@@ -62,6 +63,7 @@ Below is an example configuration file that changes the shortcut to `alt+N` to j
     }
   ],
   "jump-current-goes-to-last": false,
+  "sticky-desktops": 4,
   "move-window-to": [
     {
       "shortcut": "alt+shift+d1",

@@ -11,6 +11,7 @@ namespace WinJump.Core;
 /// Handles loading the configuration file
 /// </summary>
 internal sealed class Config {
+    public static readonly int MAX_STICKY_DESKTOPS = 10;
     public static readonly string LOCATION = Path.Combine(
         Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
         ".winjump");
@@ -29,6 +30,9 @@ internal sealed class Config {
 
     [JsonProperty("change-desktops-with-scroll")]
     public required bool ChangeDesktopsWithScroll { get; set; }
+    
+    [JsonProperty("sticky-desktops")]
+    public int StickyDesktops { get; set; }
 
     public static Config Load() {
         try {
@@ -128,7 +132,8 @@ internal sealed class Config {
             JumpTo = jumpTo,
             ToggleGroups = [],
             JumpCurrentGoesToLast = true,
-            ChangeDesktopsWithScroll = false
+            ChangeDesktopsWithScroll = false,
+            StickyDesktops = 0
         };
     }
 }

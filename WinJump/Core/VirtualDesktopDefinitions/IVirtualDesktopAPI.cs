@@ -21,6 +21,11 @@ public interface IVirtualDesktopAPI : IDisposable {
     int GetCurrentDesktop();
 
     /// <summary>
+    /// Creates a new virtual desktop
+    /// </summary>
+    void CreateDesktop();
+
+    /// <summary>
     /// Returns how many virtual desktops there are.
     /// </summary>
     /// <returns>Virtual desktop count</returns>
