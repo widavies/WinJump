@@ -1,19 +1,15 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 
-namespace WinJump.Core.VirtualDesktopDefinitions
-{
+namespace WinJump.Core.VirtualDesktopDefinitions {
     namespace Windows11_26100_2605
     {
-        public class VirtualDesktopApi : IVirtualDesktopAPI
-        {
+        public class VirtualDesktopApi : IVirtualDesktopAPI {
             public event OnDesktopChanged? OnDesktopChanged;
             private readonly uint cookie;
 
-            public VirtualDesktopApi()
-            {
-                cookie = DesktopManager.VirtualDesktopNotificationService.Register(new VirtualDesktopNotification
-                {
+            public VirtualDesktopApi() {
+                cookie = DesktopManager.VirtualDesktopNotificationService.Register(new VirtualDesktopNotification {
                     OnDesktopChanged = desktop => { OnDesktopChanged?.Invoke(desktop); }
                 });
             }
@@ -23,28 +19,23 @@ namespace WinJump.Core.VirtualDesktopDefinitions
                 DesktopManager.CreateDesktop();
             }
 
-            public int GetCurrentDesktop()
-            {
+            public int GetCurrentDesktop() {
                 return DesktopManager.GetCurrentDesktopNum();
             }
 
-            public int GetDesktopCount()
-            {
+            public int GetDesktopCount() {
                 return DesktopManager.GetDesktopCount();
             }
 
-            public void JumpToDesktop(int index)
-            {
+            public void JumpToDesktop(int index) {
                 DesktopManager.SwitchDesktop(index);
             }
 
-            public void MoveFocusedWindowToDesktop(int index)
-            {
+            public void MoveFocusedWindowToDesktop(int index) {
                 DesktopManager.MoveCurrentlyFocusedToDesktop(index);
             }
 
-            public void Dispose()
-            {
+            public void Dispose() {
                 DesktopManager.VirtualDesktopNotificationService.Unregister(cookie);
                 GC.SuppressFinalize(this);
             }
@@ -54,8 +45,7 @@ namespace WinJump.Core.VirtualDesktopDefinitions
          * Implementation
          */
 
-        internal static class DesktopManager
-        {
+        internal static class DesktopManager {
             // get handle of active window
             [DllImport("user32.dll")]
             private static extern IntPtr GetForegroundWindow();
@@ -68,53 +58,47 @@ namespace WinJump.Core.VirtualDesktopDefinitions
             internal static IApplicationViewCollection ApplicationViewCollection;
             internal static IVirtualDesktopManager VirtualDesktopManager;
 
-            static DesktopManager()
-            {
-                if (Activator.CreateInstance(Type.GetTypeFromCLSID(Guids.CLSID_ImmersiveShell) ??
+            static DesktopManager() {
+                if(Activator.CreateInstance(Type.GetTypeFromCLSID(Guids.CLSID_ImmersiveShell) ??
                                             throw new Exception("Failed to get shell")) is not IServiceProvider10
-                   shell)
-                {
+                   shell) {
                     throw new Exception("Failed to get shell");
                 }
 
-                VirtualDesktopManagerInternal = (IVirtualDesktopManagerInternal)shell.QueryService(
+                VirtualDesktopManagerInternal = (IVirtualDesktopManagerInternal) shell.QueryService(
                     Guids.CLSID_VirtualDesktopManagerInternal, typeof(IVirtualDesktopManagerInternal).GUID);
-                VirtualDesktopNotificationService = (IVirtualDesktopNotificationService)shell.QueryService(
+                VirtualDesktopNotificationService = (IVirtualDesktopNotificationService) shell.QueryService(
                     Guids.CLSID_VirtualDesktopNotificationService, typeof(IVirtualDesktopNotificationService).GUID);
                 VirtualDesktopManager =
-                    (IVirtualDesktopManager)Activator.CreateInstance(
+                    (IVirtualDesktopManager) Activator.CreateInstance(
                         Type.GetTypeFromCLSID(Guids.CLSID_VirtualDesktopManager));
-                ApplicationViewCollection = (IApplicationViewCollection)shell.QueryService(
+                ApplicationViewCollection = (IApplicationViewCollection) shell.QueryService(
                     typeof(IApplicationViewCollection).GUID, typeof(IApplicationViewCollection).GUID);
             }
 
             // Helpers
-            private static IVirtualDesktop? GetDesktop(int index)
-            {
+            private static IVirtualDesktop? GetDesktop(int index) {
                 int count = VirtualDesktopManagerInternal.GetCount();
-                if (index < 0 || index >= count) return null;
+                if(index < 0 || index >= count) return null;
                 IObjectArray desktops;
                 VirtualDesktopManagerInternal.GetDesktops(out desktops);
                 object objdesktop;
                 desktops.GetAt(index, typeof(IVirtualDesktop).GUID, out objdesktop);
                 Marshal.ReleaseComObject(desktops);
-                return (IVirtualDesktop)objdesktop;
+                return (IVirtualDesktop) objdesktop;
             }
 
-            internal static int GetIndex(IVirtualDesktop ivd)
-            {
+            internal static int GetIndex(IVirtualDesktop ivd) {
                 IObjectArray desktops;
                 VirtualDesktopManagerInternal.GetDesktops(out desktops);
 
                 int count;
                 desktops.GetCount(out count);
 
-                for (int i = 0; i < count; i++)
-                {
+                for(int i = 0; i < count; i++) {
                     object objdesktop;
                     desktops.GetAt(i, typeof(IVirtualDesktop).GUID, out objdesktop);
-                    if (ReferenceEquals(ivd, objdesktop))
-                    {
+                    if(ReferenceEquals(ivd, objdesktop)) {
                         return i;
                     }
                 }
@@ -123,10 +107,9 @@ namespace WinJump.Core.VirtualDesktopDefinitions
                 return -1;
             }
 
-            internal static void SwitchDesktop(int index)
-            {
+            internal static void SwitchDesktop(int index) {
                 IVirtualDesktop? desktop = GetDesktop(index);
-                if (desktop == null) return;
+                if(desktop == null) return;
                 VirtualDesktopManagerInternal.SwitchDesktop(desktop);
                 Marshal.ReleaseComObject(desktop);
             }
@@ -136,52 +119,42 @@ namespace WinJump.Core.VirtualDesktopDefinitions
                 VirtualDesktopManagerInternal.CreateDesktop();
             }
 
-            internal static int GetCurrentDesktopNum()
-            {
+            internal static int GetCurrentDesktopNum() {
                 var vd = VirtualDesktopManagerInternal.GetCurrentDesktop();
 
                 return GetIndex(vd);
             }
 
-            internal static int GetDesktopCount()
-            {
+            internal static int GetDesktopCount() {
                 return VirtualDesktopManagerInternal.GetCount();
             }
 
-            internal static void MoveCurrentlyFocusedToDesktop(int index)
-            {
+            internal static void MoveCurrentlyFocusedToDesktop(int index) {
                 int processId;
                 IntPtr hWnd = GetForegroundWindow();
-                if (hWnd == IntPtr.Zero) throw new ArgumentNullException();
+                if(hWnd == IntPtr.Zero) throw new ArgumentNullException();
                 GetWindowThreadProcessId(hWnd, out processId);
 
                 var desktop = GetDesktop(index);
                 if (desktop == null) return;
 
-                if (Environment.ProcessId == processId)
-                {
+                if(Environment.ProcessId == processId) {
                     // window of process
                     try // the easy way (if we are owner)
                     {
                         VirtualDesktopManager.MoveWindowToDesktop(hWnd, desktop.GetId());
-                    }
-                    catch // window of process, but we are not the owner
+                    } catch // window of process, but we are not the owner
                     {
                         IApplicationView view;
                         ApplicationViewCollection.GetViewForHwnd(hWnd, out view);
                         VirtualDesktopManagerInternal.MoveViewToDesktop(view, desktop);
                     }
-                }
-                else
-                {
+                } else {
                     // window of other process
                     ApplicationViewCollection.GetViewForHwnd(hWnd, out var view);
-                    try
-                    {
+                    try {
                         VirtualDesktopManagerInternal.MoveViewToDesktop(view, desktop);
-                    }
-                    catch
-                    {
+                    } catch {
                         // could not move active window, try main window (or whatever windows thinks is the main window)
                         ApplicationViewCollection.GetViewForHwnd(
                             System.Diagnostics.Process.GetProcessById(processId).MainWindowHandle, out view);
@@ -191,62 +164,49 @@ namespace WinJump.Core.VirtualDesktopDefinitions
             }
         }
 
-        internal class VirtualDesktopNotification : IVirtualDesktopNotification
-        {
+        internal class VirtualDesktopNotification : IVirtualDesktopNotification {
             public required Action<int> OnDesktopChanged;
 
-            public void VirtualDesktopCreated(IVirtualDesktop pDesktop)
-            {
+            public void VirtualDesktopCreated(IVirtualDesktop pDesktop) {
             }
 
             public void VirtualDesktopDestroyBegin(IVirtualDesktop pDesktopDestroyed,
-                IVirtualDesktop pDesktopFallback)
-            {
+                IVirtualDesktop pDesktopFallback) {
             }
 
             public void VirtualDesktopDestroyFailed(IVirtualDesktop pDesktopDestroyed,
-                IVirtualDesktop pDesktopFallback)
-            {
+                IVirtualDesktop pDesktopFallback) {
             }
 
-            public void VirtualDesktopDestroyed(IVirtualDesktop pDesktopDestroyed, IVirtualDesktop pDesktopFallback)
-            {
+            public void VirtualDesktopDestroyed(IVirtualDesktop pDesktopDestroyed, IVirtualDesktop pDesktopFallback) {
             }
 
-            public void VirtualDesktopMoved(IVirtualDesktop pDesktop, int nIndexFrom, int nIndexTo)
-            {
+            public void VirtualDesktopMoved(IVirtualDesktop pDesktop, int nIndexFrom, int nIndexTo) {
             }
 
-            public void VirtualDesktopNameChanged(IVirtualDesktop pDesktop, string path)
-            {
+            public void VirtualDesktopNameChanged(IVirtualDesktop pDesktop, string path) {
             }
 
-            public void ViewVirtualDesktopChanged(IApplicationView pView)
-            {
+            public void ViewVirtualDesktopChanged(IApplicationView pView) {
             }
 
-            public void CurrentVirtualDesktopChanged(IVirtualDesktop pDesktopOld, IVirtualDesktop pDesktopNew)
-            {
+            public void CurrentVirtualDesktopChanged(IVirtualDesktop pDesktopOld, IVirtualDesktop pDesktopNew) {
                 OnDesktopChanged.Invoke(DesktopManager.GetIndex(pDesktopNew));
             }
 
-            public void VirtualDesktopWallpaperChanged(IVirtualDesktop pDesktop, string path)
-            {
+            public void VirtualDesktopWallpaperChanged(IVirtualDesktop pDesktop, string path) {
             }
 
-            public void VirtualDesktopSwitched(IVirtualDesktop pDesktop)
-            {
+            public void VirtualDesktopSwitched(IVirtualDesktop pDesktop) {
             }
 
-            public void RemoteVirtualDesktopConnected(IVirtualDesktop pDesktop)
-            {
+            public void RemoteVirtualDesktopConnected(IVirtualDesktop pDesktop) {
             }
         }
 
         #region COM Interfaces
 
-        internal static class Guids
-        {
+        internal static class Guids {
             public static readonly Guid CLSID_ImmersiveShell = new("C2F03A33-21F5-47FA-B4BB-156362A2F239");
 
             public static readonly Guid CLSID_VirtualDesktopManager = new("AA509086-5CA9-4C25-8F95-589D3C07B48A");
@@ -259,30 +219,26 @@ namespace WinJump.Core.VirtualDesktopDefinitions
         }
 
         [StructLayout(LayoutKind.Sequential)]
-        internal struct Size
-        {
+        internal struct Size {
             public int X;
             public int Y;
         }
 
         [StructLayout(LayoutKind.Sequential)]
-        internal struct Rect
-        {
+        internal struct Rect {
             public int Left;
             public int Top;
             public int Right;
             public int Bottom;
         }
 
-        internal enum APPLICATION_VIEW_CLOAK_TYPE
-        {
+        internal enum APPLICATION_VIEW_CLOAK_TYPE {
             AVCT_NONE = 0,
             AVCT_DEFAULT = 1,
             AVCT_VIRTUAL_DESKTOP = 2
         }
 
-        internal enum APPLICATION_VIEW_COMPATIBILITY_POLICY
-        {
+        internal enum APPLICATION_VIEW_COMPATIBILITY_POLICY {
             AVCP_NONE = 0,
             AVCP_SMALL_SCREEN = 1,
             AVCP_TABLET_SMALL_SCREEN = 2,
@@ -293,8 +249,7 @@ namespace WinJump.Core.VirtualDesktopDefinitions
         [ComImport]
         [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
         [Guid("372E1D3B-38D3-42E4-A15B-8AB2B178F513")]
-        internal interface IApplicationView
-        {
+        internal interface IApplicationView {
             int SetFocus();
             int SwitchTo();
             int TryInvokeBack(IntPtr /* IAsyncCallback* */ callback);
@@ -355,8 +310,7 @@ namespace WinJump.Core.VirtualDesktopDefinitions
         [ComImport]
         [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
         [Guid("3F07F4BE-B107-441A-AF0F-39D82529072C")]
-        internal interface IVirtualDesktop
-        {
+        internal interface IVirtualDesktop {
             bool IsViewVisible(IApplicationView view);
             Guid GetId();
 
@@ -372,8 +326,7 @@ namespace WinJump.Core.VirtualDesktopDefinitions
         [ComImport]
         [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
         [Guid("4970BA3D-FD4E-4647-BEA3-D89076EF4B9C")]
-        internal interface IVirtualDesktopManagerInternal
-        {
+        internal interface IVirtualDesktopManagerInternal {
             int GetCount();
             void MoveViewToDesktop(IApplicationView view, IVirtualDesktop desktop);
             bool CanViewMoveDesktops(IApplicationView view);
@@ -408,8 +361,7 @@ namespace WinJump.Core.VirtualDesktopDefinitions
         [ComImport]
         [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
         [Guid("1841C6D7-4F9D-42C0-AF41-8747538F10E5")]
-        internal interface IApplicationViewCollection
-        {
+        internal interface IApplicationViewCollection {
             int GetViews(out IObjectArray array);
             int GetViewsByZOrder(out IObjectArray array);
             int GetViewsByAppUserModelId(string id, out IObjectArray array);
@@ -426,8 +378,7 @@ namespace WinJump.Core.VirtualDesktopDefinitions
         [ComImport]
         [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
         [Guid("A5CD92FF-29BE-454C-8D04-D82879FB3F1B")]
-        internal interface IVirtualDesktopManager
-        {
+        internal interface IVirtualDesktopManager {
             bool IsWindowOnCurrentVirtualDesktop(IntPtr topLevelWindow);
             Guid GetWindowDesktopId(IntPtr topLevelWindow);
             void MoveWindowToDesktop(IntPtr topLevelWindow, ref Guid desktopId);
@@ -436,8 +387,7 @@ namespace WinJump.Core.VirtualDesktopDefinitions
         [ComImport]
         [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
         [Guid("0CD45E71-D927-4F15-8B0A-8FEF525337BF")]
-        internal interface IVirtualDesktopNotificationService
-        {
+        internal interface IVirtualDesktopNotificationService {
             uint Register(IVirtualDesktopNotification notification);
 
             void Unregister(uint cookie);
@@ -446,8 +396,7 @@ namespace WinJump.Core.VirtualDesktopDefinitions
         [ComImport]
         [Guid("B9E5E94D-233E-49AB-AF5C-2B4541C3AADE")]
         [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
-        internal interface IVirtualDesktopNotification
-        {
+        internal interface IVirtualDesktopNotification {
             void VirtualDesktopCreated(IVirtualDesktop pDesktop);
 
             void VirtualDesktopDestroyBegin(IVirtualDesktop pDesktopDestroyed,
@@ -478,8 +427,7 @@ namespace WinJump.Core.VirtualDesktopDefinitions
         [ComImport]
         [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
         [Guid("92CA9DCD-5622-4BBA-A805-5E9F541BD8C9")]
-        internal interface IObjectArray
-        {
+        internal interface IObjectArray {
             void GetCount(out int count);
             void GetAt(int index, ref Guid iid, [MarshalAs(UnmanagedType.Interface)] out object obj);
         }
@@ -487,8 +435,7 @@ namespace WinJump.Core.VirtualDesktopDefinitions
         [ComImport]
         [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
         [Guid("6D5140C1-7436-11CE-8034-00AA006009FA")]
-        internal interface IServiceProvider10
-        {
+        internal interface IServiceProvider10 {
             [return: MarshalAs(UnmanagedType.IUnknown)]
             object QueryService(ref Guid service, ref Guid riid);
         }
