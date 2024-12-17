@@ -52,7 +52,10 @@ public interface IVirtualDesktopAPI : IDisposable {
         WinVersion version = WinVersion.Determine();
 
         return version.Build switch {
-            >= 22631 => version.ReleaseBuild >= 3085
+            >= 26100 => version.ReleaseBuild >= 2605 
+                ? new Windows11_26100_2605.VirtualDesktopApi() 
+                : new VirtualDesktopApi(),
+            >= 22631 => version.ReleaseBuild >= 3085 
                 ? new Windows11_22631_3085.VirtualDesktopApi()
                 : new VirtualDesktopApi(),
             // Work out the proper desktop wrapper
