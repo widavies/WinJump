@@ -28,8 +28,6 @@ To configure WinJump, right click the system tray icon and select "open config f
 
 #### Syntax
 
-There are three blocks:
-
 - `toggle-groups` let you group desktops together and cycle through them with a keyboard shortcut
 - `jump-current-goes-to-last` lets you decide whether jumping to the desktop you're already on does A) nothing or B) goes to your previous desktop
 - `jump-to` lets you define shortcuts that jump directly to a desktop
@@ -37,7 +35,7 @@ There are three blocks:
 - `change-desktops-with-scroll` should desktops automatically switch by scrolling over the taskbar?
 - `sticky-desktops` lets you set an amount of virtual desktops to be created when WinJump starts (max of 10)
 
-The `toggle-groups` and `jump-to` blocks contain a list of items, each item has a `shortcut` property. This shortcut must be a combination of:
+The `toggle-groups` and `jump-to` keys contain a list of items, each item has a `shortcut` property. This shortcut must be a combination of:
 `win`, `alt`, `shift`, and `ctrl`, it must be terminated by a key listed [here](https://learn.microsoft.com/en-us/dotnet/api/system.windows.forms.keys?view=windowsdesktop-7.0),
 and each token must be separated by `+`.
 
