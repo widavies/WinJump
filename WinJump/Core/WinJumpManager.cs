@@ -117,8 +117,6 @@ public class WinJumpManager : IDisposable {
 
             if(toggleGroup != null) {
                 _thread?.JumpToNext(toggleGroup.Desktops.Select(x => x - 1).ToArray());
-
-                return;
             }
         };
 
@@ -148,15 +146,17 @@ public class WinJumpManager : IDisposable {
         });
 
         // Create sticky desktops config
-        var desktopsToCreate = int.Clamp(config.StickyDesktops - _thread.GetDesktopCount(), 0, Config.MAX_STICKY_DESKTOPS);
-        for (var i = 0; i < desktopsToCreate; i++) {
+        int desktopsToCreate = int.Clamp(config.StickyDesktops - _thread.GetDesktopCount(), 0, Config.MAX_STICKY_DESKTOPS);
+        for (int i = 0; i < desktopsToCreate; i++) {
             _thread?.CreateDesktop();
         }
 
         // This particular event fires immediately on initial register
         _explorerMonitor.OnColorSchemeChanged += lightMode => {
             _lightMode = lightMode;
-            desktopChanged.Invoke(lightMode, (uint) _thread.GetCurrentDesktop());
+            if(_thread != null) {
+                desktopChanged.Invoke(lightMode, (uint) _thread.GetCurrentDesktop());
+            }
         };
 
         _explorerMonitor.OnExplorerRestarted += () => {
@@ -263,7 +263,7 @@ internal sealed class STAThread : IDisposable {
 
     public void JumpTo(uint index) {
  
-        var allowJump = true;
+        bool allowJump = true;
         WrapCall(() => {
             // If the desktop is the same as the current one or doesn't exist, don't allow the jump
             if(api.GetCurrentDesktop() == index) {
