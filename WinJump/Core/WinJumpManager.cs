@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using WinJump.Core.VirtualDesktopDefinitions;
 using WinJump.UI;
@@ -340,7 +341,7 @@ internal sealed class STAThread : IDisposable {
                     }
                 }
 
-                action.Invoke();
+                Task.Run(() => { action.Invoke(); }); 
 
                 if(performWindowFocusHack) {
                     IntPtr wnd = FindWindow(null, "Program Manager");
