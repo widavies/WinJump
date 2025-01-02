@@ -20,7 +20,7 @@ public sealed class MouseHook : IDisposable {
     [DllImport("kernel32.dll", CharSet = CharSet.Auto, SetLastError = true)]
     private static extern IntPtr GetModuleHandle(string lpModuleName);
 
-    private static LowLevelMouseProc _proc = HookCallback;
+    private static readonly LowLevelMouseProc _proc = HookCallback;
     private static IntPtr _hookID = IntPtr.Zero;
 
     private static event EventHandler<MouseWheelScrolledEventArgs>? _mouseEvents;
@@ -52,7 +52,7 @@ public sealed class MouseHook : IDisposable {
 
     private static IntPtr HookCallback(int nCode, IntPtr wParam, IntPtr lParam) {
         if(nCode >= 0 && MouseMessages.WM_MOUSEWHEEL == (MouseMessages) wParam) {
-            MSLLHOOKSTRUCT hookStruct = (MSLLHOOKSTRUCT) Marshal.PtrToStructure(lParam, typeof(MSLLHOOKSTRUCT));
+            MSLLHOOKSTRUCT hookStruct = Marshal.PtrToStructure<MSLLHOOKSTRUCT>(lParam);
             int delta = (short) ((hookStruct.mouseData & 0xFFFF0000) >> 16);
 
             _mouseEvents?.Invoke(null, new MouseWheelScrolledEventArgs {
